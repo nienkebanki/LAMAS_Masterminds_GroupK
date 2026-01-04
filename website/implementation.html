@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MastersMinds – Implementation</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script>
+    window.MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] } };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+<header>
+  <h1>MastersMinds</h1>
+  <h2>Implementation</h2>
+
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="intro.html">Introduction</a>
+    <a href="game.html">Game</a>
+    <a href="model.html">Model</a>
+    <a href="update.html">Update</a>
+    <a href="strategies.html">Strategies</a>
+    <a href="experiments.html">Experiments</a>
+    <a class="active" href="implementation.html">Implementation</a>
+    <a href="running.html">Running</a>
+    <a href="repository.html">Repository</a>
+    <a href="references.html">References</a>
+  </nav>
+</header>
+
+<main>
+  <section>
+    <h2>What we implemented</h2>
+    <ul>
+      <li>Enumeration of all codes (6 permutations) and worlds (36 pairs).</li>
+      <li>Public-announcement update by filtering worlds inconsistent with $(F_B,F_A)$.</li>
+      <li>Candidate sets $Cand_A(B)$ and $Cand_B(A)$ computed from remaining worlds.</li>
+      <li>Higher-order knowledge check for $K_A(|Cand_B(A)|\ge k)$.</li>
+      <li>Strategies: GreedyGain, MinLeak, Trade-off, HO-Constraint.</li>
+      <li>CLI interaction where $c_B$ is unknown to the user (default mode).</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Simplifications</h2>
+    <ul>
+      <li>3 colors and length 3 (small state space, easy to inspect, still shows DEL + HO effects).</li>
+      <li>No repetition in codes.</li>
+    </ul>
+  </section>
+</main>
+
+<footer>
+  <p>Course: LAMAS · Project website + implementation</p>
+</footer>
+</body>
+</html>

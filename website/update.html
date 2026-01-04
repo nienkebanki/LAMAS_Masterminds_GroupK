@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MastersMinds – Update</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script>
+    window.MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] } };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+<header>
+  <h1>MastersMinds</h1>
+  <h2>Public announcement update (DEL)</h2>
+
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="intro.html">Introduction</a>
+    <a href="game.html">Game</a>
+    <a href="model.html">Model</a>
+    <a class="active" href="update.html">Update</a>
+    <a href="strategies.html">Strategies</a>
+    <a href="experiments.html">Experiments</a>
+    <a href="implementation.html">Implementation</a>
+    <a href="running.html">Running</a>
+    <a href="repository.html">Repository</a>
+    <a href="references.html">References</a>
+  </nav>
+</header>
+
+<main>
+  <section>
+    <h2>Announcement and model restriction</h2>
+    <p>
+      After a guess $g$, the observed public feedback pair $(F_B,F_A)$ eliminates worlds inconsistent with it.
+      This corresponds to announcing the formula:
+      $$\big(fb(g,c_B)=F_B\big)\ \wedge\ \big(fb(g,c_A)=F_A\big).$$
+    </p>
+    <p>
+      The updated model is obtained by restricting the set of worlds to those where the formula is true.
+      Because announcements are public and truthful, the update result is common knowledge.
+    </p>
+  </section>
+</main>
+
+<footer>
+  <p>Course: LAMAS · Project website + implementation</p>
+</footer>
+</body>
+</html>

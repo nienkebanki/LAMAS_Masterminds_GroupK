@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>MastersMinds – Experiments</title>
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="styles.css?v=1" />
   <script>
     window.MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] } };
   </script>
@@ -12,57 +12,50 @@
 </head>
 <body>
 <header>
-  <h1>MastersMinds</h1>
+  <div class="title-plate" role="img" aria-label="Mastermind title plate">
+    <span class="peg-col left" aria-hidden="true">
+      <span class="peg"></span>
+      <span class="peg"></span>
+      <span class="peg"></span>
+    </span>
+
+    <h1 class="plate-text">MASTERSMINDS</h1>
+
+    <span class="peg-col right" aria-hidden="true">
+      <span class="peg"></span>
+      <span class="peg"></span>
+      <span class="peg"></span>
+    </span>
+  </div>
+
   <h2>Experiments and results</h2>
 
   <nav>
     <a href="index.html">Home</a>
-    <a href="intro.html">Introduction</a>
-    <a href="game.html">Game</a>
-    <a href="model.html">Model</a>
-    <a href="update.html">Update</a>
+    <a href="theory.html">Theory</a>
     <a href="strategies.html">Strategies</a>
     <a class="active" href="experiments.html">Experiments</a>
     <a href="implementation.html">Implementation</a>
-    <a href="running.html">Running</a>
-    <a href="repository.html">Repository</a>
     <a href="references.html">References</a>
   </nav>
 </header>
 
 <main>
   <section>
-    <h2>What we measure</h2>
-    <ul>
-      <li>Rounds until epistemic win: $|Cand_A(B)|=1$.</li>
-      <li>Leakage: how quickly $B$’s candidates for $A$ shrink, i.e. $|Cand_B(A)|$.</li>
-    </ul>
-    <p class="muted">
-      Replace the placeholder table below with results from running simulations (e.g., 200–500 random games per strategy).
-    </p>
+    <h2>Measurements</h2>
   </section>
 
   <section>
-    <h2>Results (example table)</h2>
-    <pre><code>Strategy         Avg rounds to know B    Avg final |Cand_B(A)|    Notes
-GreedyGain       ...                     ...                     Fast, leaks more
-MinLeak          ...                     ...                     Safer, slower
-Tradeoff(1,1)    ...                     ...                     Balanced
-HO-Constraint    ...                     ...                     Safer, sometimes slower</code></pre>
+    <h2>Results (tables)</h2>
   </section>
 
   <section>
     <h2>Discussion</h2>
-    <p>
-      Write 2–4 short paragraphs interpreting the table. Typical outcome:
-      GreedyGain reduces $|Cand_A(B)|$ fastest, but also tends to reduce $|Cand_B(A)|$ faster (more leakage).
-      MinLeak does the opposite. Trade-off is a balance. HO-Constraint explicitly preserves uncertainty for $B$.
-    </p>
   </section>
 </main>
 
 <footer>
-  <p>Course: LAMAS · Project website + implementation</p>
+  <p>LAMAS · Project Masterminds · Experiment</p>
 </footer>
 </body>
 </html>

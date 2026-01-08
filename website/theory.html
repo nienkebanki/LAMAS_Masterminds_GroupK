@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MastersMinds – Theory</title>
+  <link rel="stylesheet" href="styles.css?v=1" />
+  <script>
+    window.MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] } };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+<header>
+  <div class="title-plate" role="img" aria-label="Mastermind title plate">
+    <span class="peg-col left" aria-hidden="true">
+      <span class="peg"></span>
+      <span class="peg"></span>
+      <span class="peg"></span>
+    </span>
+
+    <h1 class="plate-text">MASTERSMINDS</h1>
+
+    <span class="peg-col right" aria-hidden="true">
+      <span class="peg"></span>
+      <span class="peg"></span>
+      <span class="peg"></span>
+    </span>
+  </div>
+
+  <h2>Theory</h2>
+
+  <nav>
+    <a href="index.html">Home</a>
+    <a class="active" href="theory.html">Theory</a>
+    <a href="strategies.html">Strategies</a>
+    <a href="experiments.html">Experiments</a>
+    <a href="implementation.html">Implementation</a>
+    <a href="references.html">References</a>
+  </nav>
+</header>
+
+<main>
+  <section>
+    <h2>Game rules</h2>
+    <p>
+      For this research, the Mastersminds game is adapted to a version that relates the purpose of the research. 
+      The rules and settings are changed a bit regarding the real game invented by Druiven and Grachten and also described 
+      in Verbrugge & Mol, 2008. Mastersminds is a game between two players, called $A$ and $B$, who both choose a secret code. 
+      In our implementation a code is a sequence of length $3$ consisting of different colors so there is no repetition allowed. 
+      Codes are chosen from a fixed set of $5$ colors: red, blue, yellow, green, pink. In each round, player $A$ makes a guess $g$ 
+      of length $3$. Feedback is given using two kinds of pins: a black pin means a guessed color is in the correct position, and 
+      a white pin means a guessed color occurs in the code but in a different position. The key Mastersminds twist is that after a
+      guess, the game publicly reveals a feedback pair. One feedback comparing $g$ with $B$’s secret code, and one feedback comparing 
+      $g$ with $A$’s own secret code. This means the public outcome helps $A$ learn about $B$, but also helps $B$ learn about $A$. A 
+      player wins classically when they guess the opponent’s code exactly as first. The epistemic winning condition is that player $A$ 
+      wins when $A$ knows the opponent’s code, i.e. when only one candidate for $B$ remains possible.
+    </p>
+
+    <div class="legend" aria-label="Color legend">
+      <div class="legend-item"><span class="peg red"></span> red</div>
+      <div class="legend-item"><span class="peg blue"></span> blue</div>
+      <div class="legend-item"><span class="peg yellow"></span> yellow</div>
+      <div class="legend-item"><span class="peg green"></span> green</div>
+      <div class="legend-item"><span class="peg pink"></span> pink</div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Public Announcements</h2>
+  </section>
+
+  <section>
+    <h2>Higher-order Knowledge</h2>
+  </section>
+
+  <section>
+    <h2>Common Knowledge</h2>
+  </section>
+</main>
+
+<footer>
+  <p>LAMAS · Project Masterminds · Theory</p>
+</footer>
+</body>
+</html>

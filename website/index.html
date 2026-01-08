@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>MastersMinds – Home</title>
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="styles.css?v=1" />
   <script>
     window.MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] } };
   </script>
@@ -12,63 +12,66 @@
 </head>
 <body>
 <header>
-    <div class="title-plate" role="img" aria-label="Mastermind title plate">
-        <span class="peg-col left" aria-hidden="true">
-            <span class="peg"></span><span class="peg"></span><span class="peg"></span><span class="peg"></span>
-        </span>
+  <div class="title-plate" role="img" aria-label="Mastermind title plate">
+  <span class="peg-col left" aria-hidden="true">
+    <span class="peg"></span><span class="peg"></span><span class="peg"></span>
+  </span>
 
-        <h1 class="plate-text">MASTERSMINDS</h1>
+  <h1 class="plate-text">MASTERSMINDS</h1>
 
-        <span class="peg-col right" aria-hidden="true">
-            <span class="peg"></span><span class="peg"></span><span class="peg"></span><span class="peg"></span>
-        </span>
-    </div>
+  <span class="peg-col right" aria-hidden="true">
+    <span class="peg"></span><span class="peg"></span><span class="peg"></span>
+  </span>
+</div>
+
   <h2>Logical Aspects of Multi-agent Systems</h2>
-  <h3>Group K: Alexandru-Mihai Chirita (s4740661), Dorin-Vlad Udrea (s4645014), Nienke Bánki (s4781090)</h3>
+  <h3>Group K: Alexandru-Mihai Chirita (s4740661), Dorin-Vlad Udrea (s4645014) & Nienke Bánki (s4781090)</h3>
 
   <p class="subtitle">
-    MastersMind is a two-agent Mastermind variant where each guess is a public announcement: you learn about the opponent’s
-    secret code, but you also leak information about your own code. We model this with Dynamic Epistemic Logic (public announcements)
-    and higher-order knowledge.
+    MastersMinds is a two-agent Mastermind variant where each guess is a public announcement:
+    you learn about the opponent’s code, but you also leak information about your own code.
+    We model this with Dynamic Epistemic Logic (public announcements) and higher-order knowledge.
   </p>
 
   <nav>
-  <a class="active" href="index.html" title="Home">Home</a>
-  <a href="intro.html" title="Introduction">Introduction</a>
-  <a href="game.html" title="Game">Game</a>
-  <a href="model.html" title="Model">Model</a>
-  <a href="update.html" title="Update">Update</a>
-  <a href="strategies.html" title="Strategies">Strategies</a>
-  <a href="experiments.html" title="Experiments">Experiments</a>
-  <a href="implementation.html" title="Implementation">Implementation</a>
-  <a href="running.html" title="Running">Running</a>
-  <a href="repository.html" title="Repository">Repository</a>
-  <a href="references.html" title="References">References</a>
-</nav>
+    <a class="active" href="index.html">Home</a>
+    <a href="theory.html">Theory</a>
+    <a href="strategies.html">Strategies</a>
+    <a href="experiments.html">Experiments</a>
+    <a href="implementation.html">Implementation</a>
+    <a href="references.html">References</a>
+  </nav>
 </header>
 
 <main>
   <section>
-    <h2>What this website is</h2>
+    <h2>Motivation</h2>
     <p>
-      This website is our project report. Use the menu to read each part on a separate page. The key LAMAS “advanced topic”
-      is the public-announcement update (DEL) and how it creates higher-order knowledge about what the other agent can infer.
+      Agent $A$ tries to discover $B$’s secret code, but every guess by $A$ triggers public feedback not only about $B$’s
+      code but also about $A$’s own code. Therefore every move is a trade-off: learn about $B$ while leaking information to $B$.
     </p>
   </section>
 
   <section>
-    <h2>Where to start</h2>
+    <h2>Research question</h2>
+    <p>
+      How do different guessing strategies balance (i) expected information gain about the opponent versus
+      (ii) expected information leaked about the self, and how does this appear as higher-order knowledge under public announcements?
+    </p>
+  </section>
+
+  <section>
+    <h2>Advanced topics used</h2>
     <ul>
-      <li><strong>Intro</strong>: motivation + research question.</li>
-      <li><strong>Game</strong>: rules, feedback, winning condition, edge cases.</li>
-      <li><strong>Model</strong> and <strong>Update</strong>: Kripke model + public announcements.</li>
-      <li><strong>Strategies</strong> and <strong>Experiments</strong>: what we test and what we found.</li>
+      <li><strong>Public announcements (DEL):</strong> each feedback pair shrinks the Kripke model.</li>
+      <li><strong>Higher-order knowledge:</strong> reasoning about what the opponent can infer about your code.</li>
+      <li><strong>Common knowledge:</strong> announcements are public and truthful.</li>
     </ul>
   </section>
 </main>
 
 <footer>
-  <p>Course: LAMAS · Project website + implementation</p>
+  <p>LAMAS · Project Masterminds · Home </p>
 </footer>
 </body>
 </html>

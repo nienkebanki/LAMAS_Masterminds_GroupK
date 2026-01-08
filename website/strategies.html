@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>MastersMinds – Strategies</title>
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="styles.css?v=1" />
   <script>
     window.MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] } };
   </script>
@@ -12,62 +12,42 @@
 </head>
 <body>
 <header>
-  <h1>MastersMinds</h1>
-  <h2>Guessing strategies</h2>
+  <div class="title-plate" role="img" aria-label="Mastermind title plate">
+    <span class="peg-col left" aria-hidden="true">
+      <span class="peg"></span>
+      <span class="peg"></span>
+      <span class="peg"></span>
+    </span>
+
+    <h1 class="plate-text">MASTERSMINDS</h1>
+
+    <span class="peg-col right" aria-hidden="true">
+      <span class="peg"></span>
+      <span class="peg"></span>
+      <span class="peg"></span>
+    </span>
+  </div>
+
+  <h2>Strategies</h2>
 
   <nav>
     <a href="index.html">Home</a>
-    <a href="intro.html">Introduction</a>
-    <a href="game.html">Game</a>
-    <a href="model.html">Model</a>
-    <a href="update.html">Update</a>
+    <a href="theory.html">Theory</a>
     <a class="active" href="strategies.html">Strategies</a>
     <a href="experiments.html">Experiments</a>
     <a href="implementation.html">Implementation</a>
-    <a href="running.html">Running</a>
-    <a href="repository.html">Repository</a>
     <a href="references.html">References</a>
   </nav>
 </header>
 
 <main>
   <section>
-    <h2>Gain vs leak</h2>
-    <p>
-      For each possible guess $g$ we compute:
-    </p>
-    <ul>
-      <li>Gain: expected reduction in $|Cand_A(B)|$ after the public announcement.</li>
-      <li>Leak: expected reduction in $|Cand_B(A)|$ after the same announcement.</li>
-    </ul>
-    <p>
-      Trade-off score:
-      $$Score(g)=\alpha\cdot\mathbb{E}[\Delta_B]-\beta\cdot\mathbb{E}[\Delta_A].$$
-    </p>
-  </section>
-
-  <section>
-    <h2>Concrete strategies</h2>
-    <ul>
-      <li><strong>Greedy Gain</strong>: maximize expected gain.</li>
-      <li><strong>Min-Leak</strong>: minimize expected leak.</li>
-      <li><strong>Trade-off</strong>: maximize $\alpha$ gain minus $\beta$ leak.</li>
-      <li><strong>HO-Constraint</strong>: only allow guesses that preserve a higher-order condition, then maximize trade-off.</li>
-    </ul>
-  </section>
-
-  <section>
-    <h2>Higher-order knowledge</h2>
-    <p>
-      Our HO strategy checks whether $A$ can guarantee that even after the announcement, $B$ still has at least $k$ candidates for $A$:
-      $$K_A(|Cand_B(A)|\ge k).$$
-      This means $A$ chooses guesses that avoid revealing too much about their own code.
-    </p>
+    <h2>Different Strategies</h2>
   </section>
 </main>
 
 <footer>
-  <p>Course: LAMAS · Project website + implementation</p>
+  <p>LAMAS · Project Masterminds · Strategies</p>
 </footer>
 </body>
 </html>

@@ -41,42 +41,18 @@
 
 <main>
   <section>
-    <h2>Game rules</h2>
+    <h2>Game</h2>
     <p>
-    For this project, we use an adapted version of MastersMinds, based on the game as described in Verbrugge &amp; Mol (2008).
-    Two players, $A$ and $B$, each choose a secret code. In our implementation, a code is a sequence of length $3$ drawn from a fixed
-    set of $5$ colors (red, blue, yellow, green, pink), and repetition is not allowed.
+      For this research, we use a simplified and symmetric version of the Master(s)Minds game. Our variant retains the essential
+      features of the original competitive setting introduced by Grachten and Druiven and analysed in
+      <span class="chip">Verbrugge &amp; Mol (2008)</span>, but adapts the rules to our epistemic and information-theoretic framework.
     </p>
-
     <p>
-    The important feature of MastersMinds is the distinction between private and public information. Each player knows their own
-    secret code, but not the opponent’s. However, the outcomes of each round are publicly observed, so both players can update their
-    reasoning from the same information.
+      Master(s)Minds is a two-player game in which players $A$ and $B$ each secretly choose a code. In our implementation, a code is a
+      sequence of length $3$ drawn from a fixed set of five colours (red, blue, yellow, green, pink), with no colour repetitions allowed.
+      Thus each player has $5 \cdot 4 \cdot 3 = 60$ possible secret codes. At the start of the game, each player knows their own secret
+      code and considers all $60$ codes possible for the opponent.
     </p>
-
-    <p>
-    In each round, player $A$ makes a guess $g$ of length $3$. After a guess, the game produces feedback using two types of pins:
-    black pins indicate correct color in the correct position, and white pins indicate correct color in a different position.
-    The exact feedback is determined by comparing the guess with a secret code.
-    </p>
-
-    <p>
-    The MastersMinds twist is that after each guess the game publicly reveals a pair of feedback results: one comparing $g$ with
-    $B$’s secret code, and one comparing $g$ with $A$’s own secret code. Intuitively, this creates a strategic trade-off: the public
-    outcome may help $A$ learn about $B$, while simultaneously allowing $B$ to learn something about $A$.
-    </p>
-
-    <p>
-    A player wins classically by guessing the opponent’s code exactly before the opponent does. In addition, we also use an epistemic
-    winning condition in our analysis: player $A$ is considered to have won once $A$ can uniquely determine $B$’s code, meaning that
-    only one candidate for $B$ remains consistent with the public history.
-    </p>
-
-    <p class="muted">
-    Assumptions used in our implementation: code length $3$, five available colors, no repeated colors in a code or guess, and feedback
-    is always truthful and publicly visible.
-    </p>
-
     <div class="legend" aria-label="Color legend">
       <span class="peg red"></span> red
       <span class="peg blue"></span> blue
@@ -84,6 +60,51 @@
       <span class="peg green"></span> green
       <span class="peg pink"></span> pink
     </div>
+    <h3>Feedback</h3>
+    <p>
+      Each round, player $A$ makes a guess $g$ of length $3$. Feedback is computed using the standard Mastermind rules:
+    </p>
+    <ul>
+      <li>a black pin indicates a guessed colour in the correct position;</li>
+      <li>a white pin indicates a guessed colour that appears in the secret code but in a different position.</li>
+    </ul>
+
+    <p>
+      The key Master(s)Minds twist is that the public outcome consists of a pair of feedback values:
+    </p>
+    <ol>
+      <li>the feedback comparing $g$ to $B$’s secret code, and</li>
+      <li>the feedback comparing $g$ to $A$’s own secret code.</li>
+    </ol>
+
+    <p>
+      Thus the outcome simultaneously helps $A$ learn about $B$, and helps $B$ learn about $A$. Since the outcome is public, both agents
+      update their epistemic model by eliminating all worlds (code-pairs) that would not have produced this exact feedback pair.
+    </p>
+
+    <h3>Game rules</h3>
+    <p>We formalise the game as follows:</p>
+    <ol>
+      <li>At the start of the game, players $A$ and $B$ secretly select their codes independently.</li>
+      <li>
+        In each round, the active player (starting with $A$) chooses a legal guess $g$ of length $3$ with no repeated colours.
+      </li>
+      <li>
+        The system computes the Mastermind feedback on $g$ against both secret codes and publicly announces the feedback pair.
+      </li>
+      <li>Both players perform a public-announcement update, removing all worlds inconsistent with the announced feedback.</li>
+      <li>The turn then switches to the other player, who repeats the same procedure.</li>
+      <li>A classical win occurs if a player explicitly guesses the opponent’s code exactly.</li>
+      <li>
+        An epistemic win for player $A$ occurs when $A$ knows $B$’s secret code, i.e., when the candidate set for $B$ has size $1$.
+      </li>
+    </ol>
+
+    <p>
+      This formulation makes the game fully symmetric and purely epistemic: players do not merely try to guess the opponent’s code, but
+      must also reason about what the opponent learns about their own code after every public announcement. This interaction between
+      learning and leaking lies at the heart of our strategic and information-theoretic analysis.
+    </p>
   </section>
 
   <section>

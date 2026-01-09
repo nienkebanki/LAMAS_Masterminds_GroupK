@@ -92,6 +92,8 @@ footer{
 }
 
 .peg{
+  display: inline-block; 
+  vertical-align: middle;
   width: 26px;
   height: 26px;
   border-radius: 999px;

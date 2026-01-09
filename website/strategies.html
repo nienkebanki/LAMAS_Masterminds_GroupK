@@ -32,6 +32,7 @@
 
   <nav>
     <a href="index.html">Home</a>
+    <a href="game.html">Game</a>
     <a href="theory.html">Theory</a>
     <a class="active" href="strategies.html">Strategies</a>
     <a href="experiments.html">Experiments</a>
@@ -42,8 +43,184 @@
 
 <main>
   <section>
-    <h2>Different Strategies</h2>
+    <h2>Strategies</h2>
+
+    <p>
+      Agents may pursue different objectives depending on how they value learning about the opponent’s secret code versus hiding their own.
+      We therefore describe three relatively different strategies. Each strategy corresponds to a distinct optimisation criterion and a
+      different implicit level of Theory of Mind (ToM) reasoning.
+    </p>
+
+    <ol>
+      <li>
+        <p>
+          <strong>Guessing-focused strategy (FOL).</strong>
+          This strategy focuses solely on guessing the opponent’s secret code. The agent selects guesses that maximise the reduction of its
+          own uncertainty about the opponent’s code. When providing feedback, the agent does not attempt to conceal any information: it may
+          choose any truthful formula. This corresponds to a low ToM level (0th or weak 1st order) and behaves similarly to a classical
+          Mastermind solver that is indifferent to how much information it reveals.
+        </p>
+      </li>
+
+      <li>
+        <p>
+          <strong>Hiding-focused strategy.</strong>
+          This strategy focuses on revealing as little information as possible about the agent’s own code. When responding to the opponent’s
+          guess, the agent chooses the weakest truthful feedback formula, i.e., the feedback that keeps the opponent’s uncertainty as large
+          as possible. When choosing its own guesses, the agent does not optimise for information gain; instead, it selects guesses that
+          minimise the expected information it will be forced to reveal in subsequent feedback rounds. This produces a defensive style of
+          play associated with first-order ToM: the agent anticipates how the opponent updates their beliefs and therefore avoids actions
+          that would trigger informative feedback.
+        </p>
+        <p>
+          To prevent degenerate behaviour, such as repeatedly submitting the same low-impact guess merely to avoid revealing new information,
+          we impose guardrails ensuring sufficient variation in the agent’s guesses across rounds. This maintains meaningful game progression
+          while still allowing the agent to prioritise secrecy.
+        </p>
+      </li>
+
+      <li>
+        <p>
+          <strong>Balanced strategy.</strong>
+          This strategy attempts to balance two competing goals:
+        </p>
+        <ul>
+          <li>Reducing uncertainty about the opponent’s code, and</li>
+          <li>Avoiding unnecessary leakage of information about its own code.</li>
+        </ul>
+        <p>
+          When choosing a guess, the agent evaluates both the expected information gain and the expected information leakage that would
+          result from future feedback. When giving feedback, it does not automatically choose the weakest or strongest truthful formula, but
+          selects one that optimally trades off between informativeness and secrecy. This strategy may use higher-order ToM, since the agent
+          reasons about the opponent’s belief updates and about how its own behaviour will be interpreted.
+        </p>
+      </li>
+    </ol>
+
+    <h3>Information-Theoretic Characterisation of the Strategies</h3>
+    <p>
+      To compare these strategies in a sound and complete manner, and to implement them computationally, we introduce quantitative measures
+      from information theory. These measures allow us to evaluate how much information a guess provides to a player, and how much
+      information a feedback message leaks to the opponent.
+    </p>
+
+    <h4>Uncertainty and Candidate Sets</h4>
+    <p>
+      Let $\mathsf{Codes}$ be the set of all valid secret codes. Each player $i$ maintains:
+    </p>
+    <ul>
+      <li>
+        a set $S_i \subseteq \mathsf{Codes}$ of codes that are still epistemically possible for the opponent’s secret code;
+      </li>
+      <li>
+        a set $T_i \subseteq \mathsf{Codes}$ representing the codes that the opponent currently considers possible for $i$’s own secret code
+        (as modelled by player $i$).
+      </li>
+    </ul>
+
+    <p>Assuming uniform prior beliefs, their associated uncertainties are:</p>
+    <p>
+      $$H_i^{\mathit{opp}} \;=\; \log_2 |S_i|,\qquad H_i^{\mathit{self}} \;=\; \log_2 |T_i|.$$
+    </p>
+    <p>These values express the number of bits of uncertainty remaining.</p>
+
+    <h4>Information Gained From a Guess</h4>
+    <p>
+      Suppose player $i$ chooses a guess $g$ about the opponent’s code. Let $F$ be the set of all feedback formulas.
+      For each $c \in S_i$, let $f(g,c)$ denote the feedback the opponent would send in response to $g$.
+    </p>
+
+    <p>The probability of receiving feedback $f$ when guessing $g$ is</p>
+    <p>
+      $$P_i(f \mid g)
+        \;=\;
+        \frac{
+          |\{c \in S_i \mid f(g,c) = f\}|
+        }{
+          |S_i|
+        }.$$
+    </p>
+
+    <p>If feedback $f$ is received, the player’s candidate set updates to</p>
+    <p>
+      $$S_i^{g,f}
+        \;=\;
+        \{c \in S_i \mid f(g,c) = f\},
+        \qquad
+        H_i^{\mathit{opp}}(g,f)
+        \;=\;
+        \log_2 |S_i^{g,f}|.$$
+    </p>
+
+    <p>The expected information gain from guess $g$ is</p>
+    <p>
+      $$\mathrm{IG}_i^{\mathit{self}}(g)
+        \;=\;
+        H_i^{\mathit{opp}}
+        \;-\;
+        \sum_{f \in F} P_i(f \mid g)\cdot H_i^{\mathit{opp}}(g,f).$$
+    </p>
+
+    <p>This captures how much $g$ reduces $i$’s uncertainty about the opponent’s code on average.</p>
+
+    <h4>Information Leaked Through Feedback</h4>
+    <p>When responding to the opponent’s guess with feedback $\varphi$, the opponent updates:</p>
+    <p>
+      $$T_i^{\varphi}
+        \;=\;
+        \{c \in T_i \mid (g_{\mathit{opp}}, c) \models \varphi\},
+        \qquad
+        H_i^{\mathit{self}}(\varphi)
+        \;=\;
+        \log_2 |T_i^{\varphi}|.$$
+    </p>
+
+    <p>The information leaked to the opponent is</p>
+    <p>
+      $$\mathrm{IL}_i(\varphi)
+        \;=\;
+        H_i^{\mathit{self}} - H_i^{\mathit{self}}(\varphi)
+        \;=\;
+        \log_2 |T_i| - \log_2 |T_i^{\varphi}|.$$
+    </p>
+
+    <p>A smaller $\mathrm{IL}_i(\varphi)$ means the feedback is less informative to the opponent.</p>
+
+    <h4>Information-Theoretic Interpretation of the Three Strategies</h4>
+    <p>
+      The strategies above can be expressed succinctly in terms of $\mathrm{IG}_i^{\mathit{self}}$ and $\mathrm{IL}_i$:
+    </p>
+
+    <ol>
+      <li>
+        <p>
+          <strong>Guessing-focused strategy (FOL).</strong>
+          Maximises $\mathrm{IG}_i^{\mathit{self}}(g)$ when choosing guesses, while ignoring $\mathrm{IL}_i(\varphi)$ when providing feedback.
+        </p>
+      </li>
+      <li>
+        <p>
+          <strong>Hiding-focused strategy.</strong>
+          Minimises $\mathrm{IL}_i(\varphi)$ when giving feedback, without attempting to maximise $\mathrm{IG}_i^{\mathit{self}}(g)$.
+        </p>
+      </li>
+      <li>
+        <p>
+          <strong>Balanced strategy.</strong>
+          Optimises a combined utility capturing the trade-off between information gain and secrecy:
+        </p>
+        <p>
+          $$U_i(g,\varphi)
+            \;=\;
+            \alpha \cdot \mathrm{IG}_i^{\mathit{self}}(g)
+            \;-\;
+            \beta \cdot \mathrm{IL}_i(\varphi),$$
+          where $\alpha,\beta &gt; 0$ are tunable parameters.
+        </p>
+      </li>
+    </ol>
   </section>
+
 </main>
 
 <footer>

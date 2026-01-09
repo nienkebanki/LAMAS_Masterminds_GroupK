@@ -30,11 +30,11 @@
   <p class="subtitle">
     MastersMinds is a two-agent Mastermind variant where each guess is a public announcement:
     you learn about the opponent’s code, but you also leak information about your own code.
-    We model this with Dynamic Epistemic Logic (public announcements) and higher-order knowledge.
   </p>
 
   <nav>
     <a class="active" href="index.html">Home</a>
+    <a href="game.html">Game</a>
     <a href="theory.html">Theory</a>
     <a href="strategies.html">Strategies</a>
     <a href="experiments.html">Experiments</a>
@@ -45,28 +45,19 @@
 
 <main>
   <section>
-    <h2>Motivation</h2>
+    <h2>Introduction</h2>
     <p>
-      Agent $A$ tries to discover $B$’s secret code, but every guess by $A$ triggers public feedback not only about $B$’s
-      code but also about $A$’s own code. Therefore every move is a trade-off: learn about $B$ while leaking information to $B$.
+      This LAMAS project studies MastersMinds, designed by Grachten and Druiven and described by Kooi (2000), a two-player variant of Mastermind in which every move generates information that is visible to both players. Each player aims to identify the opponent’s hidden code, but at the same time must consider what the opponent can infer from the same publicly available information. As a result, decisions are strategic where a move can be good for learning, but it can also reveal information about one’s own situation. 
     </p>
-  </section>
-
-  <section>
-    <h2>Research question</h2>
     <p>
-      How do different guessing strategies balance (i) expected information gain about the opponent versus
-      (ii) expected information leaked about the self, and how does this appear as higher-order knowledge under public announcements?
+      This tension between learning and leaking is the main motivation of our work. MastersMinds captures a realistic feature of interaction: communication and observation do not only provide information, they also create information for others. Throughout the game, players narrow down what they consider possible, while anticipating how the opponent’s beliefs evolve in response to the same observations.
     </p>
-  </section>
-
-  <section>
-    <h2>Advanced topics used</h2>
-    <ul>
-      <li><strong>Public announcements (DEL):</strong> each feedback pair shrinks the Kripke model.</li>
-      <li><strong>Higher-order knowledge:</strong> reasoning about what the opponent can infer about your code.</li>
-      <li><strong>Common knowledge:</strong> announcements are public and truthful.</li>
-    </ul>
+    <p>
+      From a logic perspective, MastersMinds is a natural setting to apply the course tools on knowledge and information change. We interpret the game as an instance of information flow. This means after each publicly observed outcome, both players update their view of what might be the case. This connects directly to epistemic logic, which is used to express what a player knows, and to dynamic updates, which describe how knowledge changes after new public information. It also highlights higher-order knowledge, since both players can reason about what the other player knows and how the other player updates.
+    </p>
+    <p>
+      In the rest of this report, we introduce the game rules, explain the logical framework we use, present the strategies we implement, and report experimental results comparing their performance.
+    </p>
   </section>
 </main>
 

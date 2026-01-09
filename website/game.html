@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MastersMinds – Game</title>
+  <link rel="stylesheet" href="styles.css?v=1" />
+  <script>
+    window.MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] } };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+<header>
+  <div class="title-plate" role="img" aria-label="Mastermind title plate">
+    <span class="peg-col left" aria-hidden="true">
+      <span class="peg"></span>
+      <span class="peg"></span>
+      <span class="peg"></span>
+    </span>
+
+    <h1 class="plate-text">MASTERSMINDS</h1>
+
+    <span class="peg-col right" aria-hidden="true">
+      <span class="peg"></span>
+      <span class="peg"></span>
+      <span class="peg"></span>
+    </span>
+  </div>
+  <h2>Game</h2>
+  <nav>
+    <a href="index.html">Home</a>
+    <a class="active" href="game.html">Game</a>
+    <a href="theory.html">Theory</a>
+    <a href="strategies.html">Strategies</a>
+    <a href="experiments.html">Experiments</a>
+    <a href="implementation.html">Implementation</a>
+    <a href="references.html">References</a>
+  </nav>
+</header>
+
+<main>
+  <section>
+    <h2>Game rules</h2>
+    <p>
+    For this project, we use an adapted version of MastersMinds, based on the game as described in Verbrugge &amp; Mol (2008).
+    Two players, $A$ and $B$, each choose a secret code. In our implementation, a code is a sequence of length $3$ drawn from a fixed
+    set of $5$ colors (red, blue, yellow, green, pink), and repetition is not allowed.
+    </p>
+
+    <p>
+    The important feature of MastersMinds is the distinction between private and public information. Each player knows their own
+    secret code, but not the opponent’s. However, the outcomes of each round are publicly observed, so both players can update their
+    reasoning from the same information.
+    </p>
+
+    <p>
+    In each round, player $A$ makes a guess $g$ of length $3$. After a guess, the game produces feedback using two types of pins:
+    black pins indicate correct color in the correct position, and white pins indicate correct color in a different position.
+    The exact feedback is determined by comparing the guess with a secret code.
+    </p>
+
+    <p>
+    The MastersMinds twist is that after each guess the game publicly reveals a pair of feedback results: one comparing $g$ with
+    $B$’s secret code, and one comparing $g$ with $A$’s own secret code. Intuitively, this creates a strategic trade-off: the public
+    outcome may help $A$ learn about $B$, while simultaneously allowing $B$ to learn something about $A$.
+    </p>
+
+    <p>
+    A player wins classically by guessing the opponent’s code exactly before the opponent does. In addition, we also use an epistemic
+    winning condition in our analysis: player $A$ is considered to have won once $A$ can uniquely determine $B$’s code, meaning that
+    only one candidate for $B$ remains consistent with the public history.
+    </p>
+
+    <p class="muted">
+    Assumptions used in our implementation: code length $3$, five available colors, no repeated colors in a code or guess, and feedback
+    is always truthful and publicly visible.
+    </p>
+
+    <div class="legend" aria-label="Color legend">
+      <span class="peg red"></span> red
+      <span class="peg blue"></span> blue
+      <span class="peg yellow"></span> yellow
+      <span class="peg green"></span> green
+      <span class="peg pink"></span> pink
+    </div>
+  </section>
+
+  <section>
+    <h2>EXAMPLE OF THE BOARD?</h2>
+  </section>
+</main>
+
+<footer>
+  <p>LAMAS · Project Masterminds · Game</p>
+</footer>
+</body>
+</html>

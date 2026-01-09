@@ -27,11 +27,10 @@
       <span class="peg"></span>
     </span>
   </div>
-
   <h2>Theory</h2>
-
   <nav>
     <a href="index.html">Home</a>
+    <a href="game.html">Game</a>
     <a class="active" href="theory.html">Theory</a>
     <a href="strategies.html">Strategies</a>
     <a href="experiments.html">Experiments</a>
@@ -42,41 +41,51 @@
 
 <main>
   <section>
-    <h2>Game rules</h2>
+    <h2>Epistemic Logic</h2>
     <p>
-      For this research, the Mastersminds game is adapted to a version that relates the purpose of the research. 
-      The rules and settings are changed a bit regarding the real game invented by Druiven and Grachten and also described 
-      in Verbrugge & Mol, 2008. Mastersminds is a game between two players, called $A$ and $B$, who both choose a secret code. 
-      In our implementation a code is a sequence of length $3$ consisting of different colors so there is no repetition allowed. 
-      Codes are chosen from a fixed set of $5$ colors: red, blue, yellow, green, pink. In each round, player $A$ makes a guess $g$ 
-      of length $3$. Feedback is given using two kinds of pins: a black pin means a guessed color is in the correct position, and 
-      a white pin means a guessed color occurs in the code but in a different position. The key Mastersminds twist is that after a
-      guess, the game publicly reveals a feedback pair. One feedback comparing $g$ with $B$’s secret code, and one feedback comparing 
-      $g$ with $A$’s own secret code. This means the public outcome helps $A$ learn about $B$, but also helps $B$ learn about $A$. A 
-      player wins classically when they guess the opponent’s code exactly as first. The epistemic winning condition is that player $A$ 
-      wins when $A$ knows the opponent’s code, i.e. when only one candidate for $B$ remains possible.
+      Epistemic logic is a modal logic where “agent $i$ knows $\varphi$” is written as $K_i\varphi$, and
+      “agent $i$ considers $\varphi$ possible” is written as $M_i\varphi$. We use this framework for MastersMinds.
+      The core idea is that knowledge is not a feeling but a constraint: agent $i$ knows $\varphi$ exactly when
+      $\varphi$ is true in every situation that $i$ still considers possible. Semantically, a Kripke model is represented
+      as a set of possible worlds (states), plus for each agent an indistinguishability relation connecting worlds that look
+      the same to that agent. Knowledge is then evaluated by looking at all indistinguishable worlds. This is the backbone
+      that lets us talk precisely about what is ruled out, what remains possible, and what becomes known.
     </p>
-
-    <div class="legend" aria-label="Color legend">
-      <div class="legend-item"><span class="peg red"></span> red</div>
-      <div class="legend-item"><span class="peg blue"></span> blue</div>
-      <div class="legend-item"><span class="peg yellow"></span> yellow</div>
-      <div class="legend-item"><span class="peg green"></span> green</div>
-      <div class="legend-item"><span class="peg pink"></span> pink</div>
-    </div>
+    <p>
+      To model MastersMinds, we treat a world as a full hidden configuration of the game. In the simplest version, that means
+      a pair $(\text{codeA}, \text{codeB})$. Player $A$’s relation connects exactly those worlds that agree on $A$’s own code
+      (because $A$ knows it) while allowing $B$’s code to vary; similarly for $B$. So each player’s information state is the
+      set of opponent codes still compatible with what they have observed. Player $A$ has solved the game when all worlds $A$
+      still considers possible agree on $B$’s code, i.e., there is only one remaining candidate for $B$. This is the formal
+      version of “the evidence uniquely determines the opponent’s code,” even if the player has not yet typed the exact guess.
+    </p>
   </section>
 
   <section>
-    <h2>Public Announcements</h2>
+    <h2>Public Announcements and Updates</h2>
+    <p>
+      Dynamic Epistemic Logic is involved in MastersMinds because after each guess, the public outcome provides new information
+      and everyone updates. Public Announcement Logic (PAL) captures exactly this kind of information change: after a truthful
+      public announcement of $\varphi$, the epistemic model is restricted to the worlds where $\varphi$ holds (incompatible worlds
+      are deleted). In MastersMinds, a feedback result functions as a public announcement because it eliminates all worlds (code pairs)
+      that would not have produced that feedback. Because the outcome is public, both players perform the update, and each player knows
+      the other updated too. This shared updating is exactly why the game becomes strategic: your move changes not only what you learn,
+      but also what your opponent can infer.
+    </p>
   </section>
 
   <section>
-    <h2>Higher-order Knowledge</h2>
+    <h2>Higher-order Knowledge and Common Knowledge</h2>
+    <p>
+      Since outcomes are public, MastersMinds naturally produces first-order reasoning but also higher-order reasoning: not only
+      “what I know,” but also “what I know you now know,” and so on. Rineke’s paper motivates MastersMinds specifically as a competitive
+      setting where players may need (and learn) second-order Theory of Mind, and it connects these orders to nested mental-state reasoning
+      that is expressible with nested knowledge operators. A stronger shared-information notion is common knowledge, meaning information that
+      everyone knows, everyone knows that everyone knows, and so on. For MastersMinds, the public history of rounds is a natural candidate
+      for common ground, and it enables players to anticipate each other’s updates.
+    </p>
   </section>
 
-  <section>
-    <h2>Common Knowledge</h2>
-  </section>
 </main>
 
 <footer>

@@ -30,6 +30,7 @@ class KripkeStructure:
         # MODIFIED to use dictionary of worlds
         for i, subset in enumerate(self.get_power_set_of_worlds()):
             ks = KripkeStructure(list(self.worlds.values()), copy.deepcopy(self.relations))
+            print(subset)
             for element in subset:
                 ks.remove_node_by_name(element)
             if ks.nodes_not_follow_formula(formula) == []:

@@ -11,15 +11,19 @@ import string
 import math
 import random
 
-CODES =['b','r','y','g','p']
+CODES =['b','r','g']
 AGENTS = string.ascii_lowercase
-CODE_LEN = 3
+CODE_LEN = 2
+
+def calculate_entropy(candidate_set):
+        if not candidate_set: return 0
+        return math.log2(len(candidate_set))
 
 class Game:
     def __init__(self):
         #Worlds are given by the distinct permutation of the two codes 
-        self.player1 = Guessing_Focused_Player()
-        self.player2 = Guessing_Focused_Player()
+        self.player1 = Guessing_Focused_Player(0)
+        self.player2 = Guessing_Focused_Player(1)
         a_possible_codes = []
         b_possible_code = []
         for x in dp(CODES,r=CODE_LEN):
@@ -42,6 +46,7 @@ class Game:
                 if a.name[-CODE_LEN:] == b.name[-CODE_LEN:] # last 3 letters
             )
         }
+        print(relations)
         self.kripke = KripkeStructure(worlds, relations)
     
 
@@ -73,61 +78,79 @@ class Game:
         return pos
    
     def winner(self):
-        if self.player1.possible_code_opponet == 1:
+        if self.player1.possible_code_opponent == 1:
             return self.player1
-        if self.player2.possible_code_opponet == 1:
+        if self.player2.possible_code_opponent == 1:
             return self.player2
         return None
   
         
         
     def play_round(self):
-        if not self.has_ended():
-            guess1 = self.player1.guess()
-            feedback1 = self.player2.give_feedback(guess1)
-            announcement1 = self.player1.update_knowledge(feedback1)
-            guess2 = self.player2.guess()
-            feedback2 = self.player1.give_feedback(guess2)
-            announcement2 = self.player2.update_knowledge(feedback2)
-            announcement = And(announcement1,announcement2)
-            self.kripke.solve(announcement)
+        guess1 = self.player1.make_guess()
+        feedback1 = self.player2.get_feedback(guess1,self.player2.secret_code)
+        guess2 = self.player2.make_guess()
+        feedback2 = self.player1.get_feedback(guess2,self.player1.secret_code)
+        announcement1 = self.player1.update_knowledge(guess1,feedback1,feedback2)
+        announcement2 = self.player2.update_knowledge(guess2,feedback2,feedback1)
+        announcement = And(announcement1,announcement2)
+        print("solving for one")
+        self.kripke = self.kripke.solve(announcement)
             
 
 
 
 class Player:
 
-    def __init__(self, name):
-        self.name = name
+    def __init__(self, idx):
+        self.idx = idx
         codes = dp(CODES,r=CODE_LEN)
         codes_list = list(codes) 
         self.secret_code = random.choice(codes_list)
         self.possible_code_own = codes_list
-        self.possible_code_opponet = codes_list
+        self.possible_code_opponent = codes_list
     def make_guess():
         raise NotImplementedError("Please implement this function in a child class")
-    def give_feedback(self,guess):
+    def get_feedback(self,guess):
         raise NotImplementedError("Please implement this function in a child class")
     def update_knowledge(self,feedback):
         raise NotImplementedError("Please implement this function in a child class")
 
 class Guessing_Focused_Player(Player):
     def black(self,g, c):
-        return sum(gi == ci for gi, ci in zip(g, self.secret_code))
-    def white(self,g):
-        b = self.black(g)
-        return len(set(g) & set(self.secret_code)) - b
+        return sum(gi == ci for gi, ci in zip(g, c))
+    def white(self,g,c):
+        b = self.black(g,c)
+        return len(set(g) & set(c)) - b
     def make_guess(self):
-        return random.choice(self.possible_code_opponet)
-    def give_feedback(self,guess):
-        return (self.black(guess), self.white(guess))
-    def update_knowledge(self,feedback):
-        return None
+        return random.choice(self.possible_code_opponent)
+    def get_feedback(self,guess,c):
+        return (self.black(guess,c), self.white(guess,c))
+    def update_knowledge(self,guess,feedback_opp,feedback_self):
+        new_possible_code = []
+        formula = None 
+        for c in self.possible_code_opponent:
+            if self.get_feedback(guess, c) == feedback_opp:
+                new_possible_code.append(c)
+            if formula is None:
+                formula = Atom(''.join(c) + AGENTS[self.idx])
+            else:
+                formula = Or(formula,Atom(''.join(c) + AGENTS[self.idx]))
+                
+        self.possible_code_opponent = [
+            c for c in self.possible_code_opponent 
+            if self.get_feedback(guess, c) == feedback_opp
+        ]
+        self.possible_code_own = [
+            c for c in self.possible_code_own 
+            if self.get_feedback(guess, c) == feedback_self
+        ]
+        return formula
 class Hiding_Focused_Player(Player):
 
     def make_guess(self):
         return guess
-    def give_feedback(self,guess):
+    def get_feedback(self,guess):
         return None
     def update_feedback(self,feedback):
         return
@@ -135,7 +158,7 @@ class Balanced_Player(Player):
 
     def make_guess(self):
         return guess
-    def give_feedback(self,guess):
+    def get_feedback(self,guess):
         return None
     def update_feedback(self,feedback):
         return    
@@ -151,8 +174,8 @@ class Balanced_Player(Player):
 
 if __name__ == "__main__":
 
-    print(random_code)
-    print(type(codes))
     print("==> starting game")
     g = Game()
-    print("==> play a round ")
+
+    print("==> plot info")
+    g.plot_knowledge()

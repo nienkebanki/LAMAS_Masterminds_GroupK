@@ -19,6 +19,7 @@ def calculate_entropy(candidate_set):
         if not candidate_set: return 0
         return math.log2(len(candidate_set))
 
+
 class Game:
     def __init__(self):
         #Worlds are given by the distinct permutation of the two codes 
@@ -46,36 +47,35 @@ class Game:
                 if a.name[-CODE_LEN:] == b.name[-CODE_LEN:] # last 3 letters
             )
         }
-        print(relations)
         self.kripke = KripkeStructure(worlds, relations)
     
 
-    def plot_knowledge(self, layout="neato", pos=None):
-        G = nx.DiGraph()
-        nodes = self.kripke.worlds.keys()
-        # Edges drawn are given by the union of all agents' relations, with the labels depending on which agents' relations
-        # the edge comes from.
-        edges     = [(w, v, {'label': ''.join([a for a in AGENTS[:2] if (w,v) in self.kripke.relations[a]])})
-                     for (w, v) in reduce(lambda x, y : x.union(y), self.kripke.relations.values()) if w != v]
-        G.add_nodes_from(nodes)
-        G.add_edges_from(edges) 
-        if pos is None:
-            pos = nx.nx_agraph.graphviz_layout(G, layout)
-        else:
-            # Reuse positions for the appropriate worlds if possible.
-            pos = {a: pos[a1] for a in nodes for a1 in pos.keys() if a.startswith(a1)}
-        # Use newlines instead of commas in node labels to avoid them being too long
-        nodenames = {n: "\n".join(n.split(",")) for n in G.nodes}
-        numlines = list(G.nodes.keys())[0].count(",")+1
-        # Adjust font size based on how large the node label will be
-        node_size = 2500*math.sqrt(numlines)
-        font_size = round(node_size / 40 / max(numlines*2.1+.4,0))
-        nx.draw(G, pos, with_labels=True, labels=nodenames, node_size=node_size, font_size=font_size, node_color="white", edgecolors="black")
-        if (len(edges) < 200):
-            # Draw edge labels if it's reasonable to do so
-            nx.draw_networkx_edge_labels(G, pos, {(w,v):l for (w,v,l) in G.edges(data="label")}, font_size=20)
-        plt.savefig("plot.png") 
-        return pos
+    # def plot_knowledge(self, layout="neato", pos=None):
+    #     G = nx.DiGraph()
+    #     nodes = self.kripke.worlds.keys()
+    #     # Edges drawn are given by the union of all agents' relations, with the labels depending on which agents' relations
+    #     # the edge comes from.
+    #     edges     = [(w, v, {'label': ''.join([a for a in AGENTS[:2] if (w,v) in self.kripke.relations[a]])})
+    #                  for (w, v) in reduce(lambda x, y : x.union(y), self.kripke.relations.values()) if w != v]
+    #     G.add_nodes_from(nodes)
+    #     G.add_edges_from(edges) 
+    #     if pos is None:
+    #         pos = nx.nx_agraph.graphviz_layout(G, layout)
+    #     else:
+    #         # Reuse positions for the appropriate worlds if possible.
+    #         pos = {a: pos[a1] for a in nodes for a1 in pos.keys() if a.startswith(a1)}
+    #     # Use newlines instead of commas in node labels to avoid them being too long
+    #     nodenames = {n: "\n".join(n.split(",")) for n in G.nodes}
+    #     numlines = list(G.nodes.keys())[0].count(",")+1
+    #     # Adjust font size based on how large the node label will be
+    #     node_size = 2500*math.sqrt(numlines)
+    #     font_size = round(node_size / 40 / max(numlines*2.1+.4,0))
+    #     nx.draw(G, pos, with_labels=True, labels=nodenames, node_size=node_size, font_size=font_size, node_color="white", edgecolors="black")
+    #     if (len(edges) < 200):
+    #         # Draw edge labels if it's reasonable to do so
+    #         nx.draw_networkx_edge_labels(G, pos, {(w,v):l for (w,v,l) in G.edges(data="label")}, font_size=20)
+    #     plt.savefig("plot.png") 
+    #     return pos
    
     def winner(self):
         if self.player1.possible_code_opponent == 1:
@@ -88,6 +88,7 @@ class Game:
         
     def play_round(self):
         guess1 = self.player1.make_guess()
+        print(f'Player a makes guess {guess1}')
         feedback1 = self.player2.get_feedback(guess1,self.player2.secret_code)
         guess2 = self.player2.make_guess()
         feedback2 = self.player1.get_feedback(guess2,self.player1.secret_code)
@@ -95,7 +96,10 @@ class Game:
         announcement2 = self.player2.update_knowledge(guess2,feedback2,feedback1)
         announcement = And(announcement1,announcement2)
         print("solving for one")
+        print(announcement)
+        print(len(self.kripke.worlds))
         self.kripke = self.kripke.solve(announcement)
+        print(len(self.kripke.worlds))
             
 
 
@@ -107,6 +111,7 @@ class Player:
         codes = dp(CODES,r=CODE_LEN)
         codes_list = list(codes) 
         self.secret_code = random.choice(codes_list)
+        print(f'Agent{AGENTS[idx]} secret code: {self.secret_code}')
         self.possible_code_own = codes_list
         self.possible_code_opponent = codes_list
     def make_guess():
@@ -130,17 +135,14 @@ class Guessing_Focused_Player(Player):
         new_possible_code = []
         formula = None 
         for c in self.possible_code_opponent:
+            
             if self.get_feedback(guess, c) == feedback_opp:
                 new_possible_code.append(c)
-            if formula is None:
-                formula = Atom(''.join(c) + AGENTS[self.idx])
-            else:
-                formula = Or(formula,Atom(''.join(c) + AGENTS[self.idx]))
-                
-        self.possible_code_opponent = [
-            c for c in self.possible_code_opponent 
-            if self.get_feedback(guess, c) == feedback_opp
-        ]
+                if formula is None:
+                    formula = Atom(''.join(c) + AGENTS[self.idx])
+                else:
+                    formula = Or(formula,Atom(''.join(c) + AGENTS[self.idx]))
+        print(feedback_opp)
         self.possible_code_own = [
             c for c in self.possible_code_own 
             if self.get_feedback(guess, c) == feedback_self
@@ -176,6 +178,6 @@ if __name__ == "__main__":
 
     print("==> starting game")
     g = Game()
-
-    print("==> plot info")
-    g.plot_knowledge()
+    print("==> one round")
+    g.play_round()
+   

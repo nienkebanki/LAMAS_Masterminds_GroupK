@@ -15,8 +15,9 @@ class Atom:
     def semantic(self, ks, world_to_test):
         """Function returns assignment of variable in Kripke's world.
         """
-        # MODIFIED : dictionary read instead of looping through a list
-        return ks.worlds[world_to_test].assignment.get(self.name, False)
+        for world in ks.worlds:
+            if world.name == world_to_test:
+                return world.assignment.get(self.name, False)
 
     def __eq__(self, other):
         return isinstance(other, Atom) and other.name == self.name
@@ -34,17 +35,20 @@ class Box:
         self.inner = inner
 
     def semantic(self, ks, world_to_test):
-        # MODIFIED for one-night ultimate werewolf: return immediately on finding a counterexample
+        result = True
         for relation in ks.relations:
-            if relation[0] == world_to_test and not self.inner.semantic(ks, relation[1]):
-                return False
-        return True
+            if relation[0] == world_to_test:
+                result = result and self.inner.semantic(ks, relation[1])
+        return result
 
     def __eq__(self, other):
         return isinstance(other, Box) and self.inner == other.inner
 
     def __str__(self):
-        return u"\u2610" + str(self.inner)
+        if isinstance(self.inner, Atom):
+            return u"\u2610" + " " + str(self.inner)
+        else:
+            return u"\u2610" + "(" + str(self.inner) + ")"
 
 
 class Box_a:
@@ -57,17 +61,19 @@ class Box_a:
         self.agent = agent
 
     def semantic(self, ks, world_to_test):
-        # MODIFIED for one-night ultimate werewolf: return immediately on finding a counterexample
+        result = True
         for relation in ks.relations.get(self.agent, {}):
-            if relation[0] == world_to_test and not self.inner.semantic(ks, relation[1]):
-                return False
-        return True
+            if relation[0] == world_to_test:
+                result = result and self.inner.semantic(ks, relation[1])
+        return result
 
+    # TODO
     def __eq__(self, other):
-        return isinstance(other, Box_a) and self.inner == other.inner and self.agent == other.agent
+        raise NotImplementedError
 
+    # TODO
     def __str__(self):
-        return u"\u2610[" + str(self.agent) + "]" + str(self.inner)
+        raise NotImplementedError
 
 
 class Box_star:
@@ -104,17 +110,20 @@ class Diamond:
         self.inner = inner
 
     def semantic(self, ks, world_to_test):
-        # MODIFIED for one-night ultimate werewolf: return immediately on finding an example
+        result = False
         for relation in ks.relations:
-            if relation[0] == world_to_test and self.inner.semantic(ks, relation[1]):
-                return True
-        return False
+            if relation[0] == world_to_test:
+                result = result or self.inner.semantic(ks, relation[1])
+        return result
 
     def __eq__(self, other):
         return isinstance(other, Diamond) and self.inner == other.inner
 
     def __str__(self):
-        return u"\u25C7" + str(self.inner)
+        if isinstance(self.inner, Atom):
+            return u"\u25C7" + " " + str(self.inner)
+        else:
+            return u"\u25C7" + "(" + str(self.inner) + ")"
 
 
 class Diamond_a:
@@ -127,17 +136,19 @@ class Diamond_a:
         self.agent = agent
 
     def semantic(self, ks, world_to_test):
-        # MODIFIED for one-night ultimate werewolf: return immediately on finding an example
+        result = False
         for relation in ks.relations.get(self.agent, {}):
-            if relation[0] == world_to_test and self.inner.semantic(ks, relation[1]):
-                return True
-        return False
+            if relation[0] == world_to_test:
+                result = result or self.inner.semantic(ks, relation[1])
+        return result
 
+    # TODO
     def __eq__(self, other):
-        return isinstance(other, Diamond_a) and self.inner == other.inner and self.agent == other.agent
+        raise NotImplementedError
 
+    # TODO
     def __str__(self):
-        return u"\u25C7[" + str(self.agent) + "]" + str(self.inner)
+        raise NotImplementedError
 
 
 class Implies:

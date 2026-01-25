@@ -88,11 +88,10 @@ class Game:
         for round_num in range(1, max_rounds + 1):
             
             self.play_round()
-            if self.there_is_a_winner():
-                
-
+            if self.there_is_a_winner():           
+                break
+        
 class Player:
-
     def __init__(self, idx):
         self.idx = idx
         codes = dp(CODES,r=CODE_LEN)

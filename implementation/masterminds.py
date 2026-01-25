@@ -2,12 +2,6 @@ from mlsolver.kripke import *
 from mlsolver.formula import *
 from more_itertools import distinct_permutations as dp
 from itertools import product
-import networkx as nx
-import matplotlib.pyplot as plt
-from functools import reduce
-import pygraphviz
-import sys
-import string
 import math
 import random
 from collections import defaultdict
@@ -82,15 +76,18 @@ class Game:
         announcement2 = self.player2.update_knowledge(guess2,feedback2,feedback1)
         announcement = And(announcement1,announcement2)
         self.kripke = self.kripke.solve(announcement)
+        return len(self.kripke.worlds)
 
     def simulate_game(self):
-        max_rounds = 20
+        max_rounds = 60
+        round_leakeage = [len(self.kripke.worlds)]
         for round_num in range(1, max_rounds + 1):
             
-            self.play_round()
+            leak = self.play_round()
+            round_leakeage.append(leak)
             if self.there_is_a_winner():           
                 break
-        
+        return round_num
 class Player:
     def __init__(self, idx):
         self.idx = idx

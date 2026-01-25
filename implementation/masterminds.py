@@ -11,7 +11,7 @@ import string
 import math
 import random
 from collections import defaultdict
-import 
+ 
 
 CODES =['b','r','g','y','p']
 AGENTS = ['i','j']

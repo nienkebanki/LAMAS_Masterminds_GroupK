@@ -86,7 +86,7 @@ def main():
     matchup_id = 0
     game_counter = 0
 
-    # Round-robin -including- self-play: j starts from i
+    # round-robin -including- self-play: j starts from i
     for i in range(len(pool)):
         for j in range(i, len(pool)):
             A = pool[i]
@@ -98,7 +98,7 @@ def main():
                 swap = (g % 2 == 1)
                 p1_spec, p2_spec = (B, A) if swap else (A, B)
 
-                # Progress line (what you asked for)
+                # Progress line
                 print(
                     f"Game {game_counter}/{total_games_expected} | "
                     f"Matchup {matchup_id}/{matchups_including_self} | "

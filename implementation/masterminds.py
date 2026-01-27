@@ -109,7 +109,7 @@ class Player:
         and return a formula capturing the surviving opponent candidates for this agent
         (used for PAL update on the Kripke model).
         """
-        # Update Si
+        # update Si
         new_opp: List[Tuple[str, ...]] = []
         formula = None
 
@@ -121,7 +121,7 @@ class Player:
 
         self.possible_code_opponent = new_opp
 
-        # Update Ti (public self-feedback)
+        # update Ti (public self-feedback)
         self.possible_code_own = [
             c for c in self.possible_code_own
             if feedback(guess, c) == feedback_self

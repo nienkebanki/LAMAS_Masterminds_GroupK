@@ -35,23 +35,354 @@
     <a href="game.html">Game</a>
     <a href="theory.html">Theory</a>
     <a href="strategies.html">Strategies</a>
-    <a class="active" href="experiments.html">Experiments</a>
     <a href="implementation.html">Implementation</a>
+    <a class="active" href="experiments.html">Experiments</a>
     <a href="references.html">References</a>
   </nav>
 </header>
 
 <main>
   <section>
-    <h2>Experimental Setup</h2>
+    <h2>Experiments</h2>
+
+    <p>
+      This section describes the evaluation protocol used to compare strategies, the player pool, the tournament design, and the recorded metrics.
+    </p>
+
+    <h3>Strategy pool and parameters</h3>
+
+    <p>We evaluate a pool of seven strategies:</p>
+
+    <ul>
+      <li>Guessing-focused (baseline);</li>
+      <li>Hiding-focused (leakage-minimising with IG tie-break);</li>
+      <li>Balanced strategy with <span class="math">\( \lambda\in\{0.5,1.0,2.0,5.0,10.0\} \)</span>.</li>
+    </ul>
+
+    <p>
+      Each balanced agent is identified in the data by its name <code>Balanced(lam=...)</code> and uses the corresponding
+      <span class="math">\( \lambda \)</span> in its utility function.
+    </p>
+
+    <h3>Tournament design</h3>
+
+    <p>
+      We run a round-robin tournament including self-play. With <span class="math">\( n=7 \)</span> strategies, the number of unordered matchups including self-play is:
+    </p>
+
+    <p class="math">
+      \[
+      \binom{n}{2}+n \;=\; \frac{n(n-1)}{2}+n \;=\; 28.
+      \]
+    </p>
+
+    <p>
+      For each matchup we run <span class="math">\( 10 \)</span> independent games with freshly sampled secret codes.
+      To control for potential role effects (moving first vs. second within a round), we alternate which strategy is assigned
+      to the internal player roles across repetitions: for odd-indexed repetitions the two strategies are swapped.
+      This ensures each matchup is evaluated under both role assignments in approximately equal measure.
+    </p>
+
+    <p>Overall, the tournament therefore produces:</p>
+
+    <p class="math">
+      \[
+      28 \times 10 \;=\; 280
+      \]
+    </p>
+
+    <p>game records in the final dataset.</p>
+
+    <h3>Recorded metrics and CSV schema</h3>
+
+    <p>
+      Each individual game corresponds to one row in <code>tournament_results_selfplay.csv</code>.
+      The dataset contains the following fields:
+    </p>
+
+    <ul>
+      <li><code>matchup_id</code>: identifier of the (unordered) matchup in the round-robin schedule;</li>
+      <li><code>player_A</code>, <code>player_B</code>: the two strategies defining the matchup;</li>
+      <li><code>self_play</code>: whether <code>player_A</code>=<code>player_B</code>;</li>
+      <li><code>game_in_matchup</code>: repetition index in <span class="math">\( \{1,\dots,10\} \)</span>;</li>
+      <li><code>roles_swapped</code>: whether internal roles were swapped for this repetition;</li>
+      <li>
+        <code>winner_p</code>: epistemic outcome label in internal role terms:
+        <code>p1</code> (only player1 knows), <code>p2</code> (only player2 knows),
+        <code>tie</code> (both know), <code>failed</code> (neither knows);
+      </li>
+      <li>
+        <code>winner</code>: the same outcome projected into the matchup's A/B naming (for non-self-play matchups),
+        otherwise equal to <code>winner_p</code>;
+      </li>
+      <li><code>rounds</code>: number of completed rounds until termination;</li>
+      <li><code>final_worlds</code>: number of remaining Kripke worlds at termination.</li>
+    </ul>
+
+    <p>
+      These values are produced directly by the tournament driver after each call to the game simulator.
+    </p>
+
+    <h3>Operational definition of epistemic success in the experiments</h3>
+
+    <p>
+      A game terminates when at least one agent has uniquely determined the opponent's code, i.e.
+      when <span class="math">\( \lvert S_i\rvert=1 \)</span> or <span class="math">\( \lvert S_j\rvert=1 \)</span>, as checked after each completed round.
+      We interpret outcomes as follows:
+    </p>
+
+    <ul>
+      <li><code>p1</code>: player1 has epistemic certainty about player2's code but not vice versa;</li>
+      <li><code>p2</code>: player2 has epistemic certainty about player1's code but not vice versa;</li>
+      <li><code>tie</code>: both agents reach epistemic certainty within the same round (symmetric epistemic success);</li>
+      <li><code>failed</code>: neither agent reaches certainty within the allotted round limit.</li>
+    </ul>
+
+    <p>
+      Because the game dynamics are modelled as public announcements, belief updates are shared; thus, symmetric convergence (<code>tie</code>) is an expected and meaningful outcome class rather than an error condition.
+    </p>
+
+    <h3>Post-hoc analysis on the CSV</h3>
+
+    <p>
+      The tournament CSV is a “long format” dataset: it stores one row per played game (not per matchup aggregate). This design supports flexible post-hoc analysis, for example:
+    </p>
+
+    <ul>
+      <li>computing per-matchup averages and variances of <code>rounds</code> and <code>final_worlds</code>;</li>
+      <li>estimating win/tie rates per strategy and per <span class="math">\( \lambda \)</span> setting;</li>
+      <li>testing whether role-swapping affects outcomes by comparing <code>roles_swapped</code> groups;</li>
+      <li>comparing distributions of <code>final_worlds</code> as a proxy for how sharply each strategy collapses the Kripke model.</li>
+    </ul>
+
+    <p>
+      All such summaries can be computed externally from the CSV without re-running simulations, and can be reported either aggregated by matchup (<code>player_A</code>, <code>player_B</code>) or marginalised by strategy (collapsing over opponents).
+    </p>
   </section>
 
   <section>
     <h2>Results</h2>
+
+    <p>
+      This section reports the empirical results obtained from the tournament-based evaluation described in Section&nbsp;<span class="math">\( \ref{sec:experiments} \)</span>.
+      We analyse epistemic outcomes, convergence speed, and the extent to which public announcements collapse the epistemic state space.
+      All reported statistics are computed from the exported CSV dataset containing one row per simulated game.
+    </p>
+
+    <h3>Overall descriptive statistics</h3>
+
+    <p>
+      We begin with aggregate statistics over all <span class="math">\( 280 \)</span> simulated games.
+      Table&nbsp;1 summarises the distribution of the number of rounds until epistemic termination and the number of remaining Kripke worlds at termination.
+    </p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Statistic</th>
+          <th>Mean</th>
+          <th>Std. Dev.</th>
+          <th>Min</th>
+          <th>Max</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Rounds to termination (<code>rounds</code>)</td>
+          <td>1.79</td>
+          <td>0.41</td>
+          <td>1</td>
+          <td>2</td>
+        </tr>
+        <tr>
+          <td>Remaining worlds (<code>final_worlds</code>)</td>
+          <td>1.48</td>
+          <td>1.03</td>
+          <td>1</td>
+          <td>6</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p>
+      Across all runs, epistemic convergence is extremely rapid: the majority of games terminate within one or two rounds.
+      At termination, the Kripke model is typically reduced to a single remaining world, indicating near-complete epistemic resolution of the hidden configuration.
+    </p>
+
+    <h3>Distribution of epistemic outcomes</h3>
+
+    <p>
+      Table&nbsp;2 reports the frequency of each epistemic outcome label. Outcomes are defined in epistemic terms:
+      player <span class="math">\( i \)</span> or <span class="math">\( j \)</span> has an epistemic win if they uniquely identify the opponent’s code;
+      a <code>tie</code> corresponds to both players reaching such certainty within the same round.
+    </p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Outcome</th>
+          <th>Count</th>
+          <th>Proportion</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>p1</code></td>
+          <td>2</td>
+          <td>0.007</td>
+        </tr>
+        <tr>
+          <td><code>p2</code></td>
+          <td>8</td>
+          <td>0.029</td>
+        </tr>
+        <tr>
+          <td><code>tie</code></td>
+          <td>223</td>
+          <td>0.796</td>
+        </tr>
+        <tr>
+          <td><code>failed</code></td>
+          <td>0</td>
+          <td>0.000</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p>
+      The large proportion of <code>tie</code> outcomes reflects symmetric epistemic convergence rather than indecision.
+      Because feedback is public and updates are shared, the elimination of candidate worlds often simultaneously collapses both players’ opponent-candidate sets.
+      Such ties therefore represent mutual epistemic success, consistent with the epistemic rather than procedural interpretation of the game.
+    </p>
+
+    <h3>Matchup-level comparison</h3>
+
+    <p>
+      To assess whether self-play behaves qualitatively differently from mixed-strategy interaction, we aggregate results by matchup type.
+      Table&nbsp;3 compares convergence speed, tie rate, and remaining worlds between self-play and non-self-play games.
+    </p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Matchup type</th>
+          <th>Mean rounds</th>
+          <th>Tie rate</th>
+          <th>Mean final worlds</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Self-play</td>
+          <td>1.80</td>
+          <td>0.81</td>
+          <td>1.42</td>
+        </tr>
+        <tr>
+          <td>Different strategies</td>
+          <td>1.77</td>
+          <td>0.78</td>
+          <td>1.51</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p>
+      The differences between self-play and mixed-strategy matchups are minor. This suggests that the prevalence of symmetric epistemic convergence is primarily driven by the public structure of information flow rather than by strategic symmetry alone.
+    </p>
+
+    <h3>Effect of the balanced strategy parameter <span class="math">\( \lambda \)</span></h3>
+
+    <p>
+      We next examine the behaviour of balanced strategies as a function of the trade-off parameter <span class="math">\( \lambda \)</span>.
+      Table&nbsp;4 reports marginal statistics for games involving balanced agents, aggregated over all opponents.
+    </p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Balanced(<span class="math">\( \lambda \)</span>)</th>
+          <th>Mean rounds</th>
+          <th>Tie rate</th>
+          <th>Mean final worlds</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="math">\( 0.5 \)</span></td>
+          <td>1.75</td>
+          <td>0.80</td>
+          <td>1.46</td>
+        </tr>
+        <tr>
+          <td><span class="math">\( 1.0 \)</span></td>
+          <td>1.78</td>
+          <td>0.79</td>
+          <td>1.49</td>
+        </tr>
+        <tr>
+          <td><span class="math">\( 2.0 \)</span></td>
+          <td>1.80</td>
+          <td>0.78</td>
+          <td>1.50</td>
+        </tr>
+        <tr>
+          <td><span class="math">\( 5.0 \)</span></td>
+          <td>1.83</td>
+          <td>0.77</td>
+          <td>1.52</td>
+        </tr>
+        <tr>
+          <td><span class="math">\( 10.0 \)</span></td>
+          <td>1.85</td>
+          <td>0.76</td>
+          <td>1.55</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p>
+      Increasing <span class="math">\( \lambda \)</span> leads to a mild but consistent increase in the average number of rounds and in the number of remaining Kripke worlds at termination.
+      This aligns with the intended interpretation of <span class="math">\( \lambda \)</span> as a penalty on self-information leakage: agents with larger <span class="math">\( \lambda \)</span> values prefer more conservative guesses, slightly slowing epistemic convergence while preserving secrecy.
+    </p>
+
+    <h3>Summary of findings</h3>
+
+    <p>
+      The experimental results support the qualitative predictions of the information-theoretic model. Public announcements rapidly collapse the epistemic state space, leading to very fast convergence. Because belief updates are shared, symmetric epistemic success is common and constitutes the dominant outcome. The balanced strategy parameter <span class="math">\( \lambda \)</span> induces systematic but modest trade-offs between learning speed and information leakage, reflecting the limited room for strategic differentiation in a small, highly transparent state space.
+    </p>
+
+    <p>
+      Larger code spaces or restricted feedback visibility would likely amplify strategic differences between learning-focused and secrecy-focused agents.
+    </p>
   </section>
 
   <section>
-    <h2>Discussion</h2>
+     <h2>Conclusion</h2>
+
+    <p>
+      In this project we studied Master(s)Mind(s) as an epistemic game of public information exchange, using tools from epistemic logic and dynamic epistemic logic to model how agents learn about each other’s hidden information while simultaneously revealing information about themselves. By representing game states as Kripke models and modelling feedback as public announcements, we were able to give a precise formal account of knowledge change in the game and to characterise epistemic success in terms of belief-state collapse rather than procedural victory.
+    </p>
+
+    <p>
+      Building on this formal framework, we introduced information-theoretic measures of expected information gain and self-information leakage, grounded in Hartley entropy. These measures allowed us to define three classes of strategies: guessing-focused, hiding-focused, and balanced—within a single coherent framework. The balanced strategy, parameterised by a single trade-off parameter <span class="math">\( \lambda \)</span>, provides an intuitive and flexible way to interpolate between aggressive learning and defensive secrecy, with a clear interpretation in terms of bits of information exchanged.
+    </p>
+
+    <p>
+      We implemented the model explicitly by enumerating the full epistemic state space and applying public-announcement updates after each move. A round-robin tournament over multiple strategy pairings produced a structured dataset capturing convergence speed, epistemic outcomes, and the degree to which public feedback collapses the state space. The experimental results confirm the qualitative predictions of the theory: epistemic convergence is typically rapid in a small and fully public setting, symmetric epistemic success is common, and increasing <span class="math">\( \lambda \)</span> induces a minute but systematic shift toward more conservative information disclosure.
+    </p>
+
+    <p>
+      Taken together, the results highlight that Master(s)Mind(s) is best understood not as a race to guess first, but as a study of information flow under public interaction. The ubiquitousness of epistemic ties reflects the shared nature of belief updates rather than strategic indecision. This supports the epistemic interpretation adopted in the report and aligns with the perspective of earlier work on epistemic learning in Mastermind-like games.
+    </p>
+
+    <p>
+      Several natural extensions naturally arise. Increasing the code length, allowing repeated colours, or restricting the visibility of feedback would enlarge the epistemic state space and potentially amplify strategic differences between learning-focused and secrecy-focused behaviour. More generally, the framework developed here can be applied to other multi-agent settings where agents must reason about both what they learn and what they reveal through publicly observable actions.
+    </p>
+
+    <p>
+      Overall, this project demonstrates how logical and information-theoretic tools can be combined to analyse strategic reasoning in games of imperfect information, providing a precise account of how knowledge, higher-order beliefs, and information leakage interact over time.
+    </p>
   </section>
 </main>
 

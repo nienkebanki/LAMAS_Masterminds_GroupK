@@ -28,7 +28,7 @@
   <h3>Group K: Alexandru-Mihai Chirita (s4740661), Dorin-Vlad Udrea (s4645014) & Nienke Bánki (s4781090)</h3>
 
   <p class="subtitle">
-    MastersMinds is a two-agent Mastermind variant where each guess is a public announcement:
+    MastersMinds is a competitive two-sided Mastermind variant where each guess is a public announcement:
     you learn about the opponent’s code, but you also leak information about your own code.
   </p>
 
@@ -37,8 +37,8 @@
     <a href="game.html">Game</a>
     <a href="theory.html">Theory</a>
     <a href="strategies.html">Strategies</a>
-    <a href="experiments.html">Experiments</a>
     <a href="implementation.html">Implementation</a>
+    <a href="experiments.html">Experiments</a>
     <a href="references.html">References</a>
   </nav>
 </header>
@@ -46,18 +46,20 @@
 <main>
   <section>
     <h2>Introduction</h2>
-    <p>
-      This LAMAS project studies MastersMinds, designed by Grachten and Druiven and described by Kooi (2000), a two-player variant of Mastermind in which every move generates information that is visible to both players. Each player aims to identify the opponent’s hidden code, but at the same time must consider what the opponent can infer from the same publicly available information. As a result, decisions are strategic where a move can be good for learning, but it can also reveal information about one’s own situation. 
-    </p>
-    <p>
-      This tension between learning and leaking is the main motivation of our work. MastersMinds captures a realistic feature of interaction: communication and observation do not only provide information, they also create information for others. Throughout the game, players narrow down what they consider possible, while anticipating how the opponent’s beliefs evolve in response to the same observations.
-    </p>
-    <p>
-      From a logic perspective, MastersMinds is a natural setting to apply the course tools on knowledge and information change. We interpret the game as an instance of information flow. This means after each publicly observed outcome, both players update their view of what might be the case. This connects directly to epistemic logic, which is used to express what a player knows, and to dynamic updates, which describe how knowledge changes after new public information. It also highlights higher-order knowledge, since both players can reason about what the other player knows and how the other player updates.
-    </p>
-    <p>
-      In the rest of this report, we introduce the game rules, explain the logical framework we use, present the strategies we implement, and report experimental results comparing their performance.
-    </p>
+
+    <p>This LAMAS project studies Master(s)Mind(s), designed by Grachten and Druiven and described by \cite{Kooi2000}. Master(s)Mind(s) is based on the classic board game Mastermind, a code-breaking game of imperfect information. In the standard version of Mastermind, one player secretly selects a code, a sequence of coloured pegs, and the other player tries to discover this code by making guesses. After each guess, feedback is given that indicates how close the guess is to the secret: some pegs may be correct both in colour and position, and some may have a correct colour but be placed in a different position. In this way, each round provides partial information that allows the guesser to eliminate impossible codes and gradually narrow down the set of candidates.</p>
+
+    <p>Master(s)Mind(s) extends this setting by turning it into a fully competitive two-player game. Instead of only one player choosing a secret code, both players choose a secret code, and they alternate making guesses. Crucially, the outcome of every round is publicly observable: the information produced by a guess is not only useful for the player who made it, but can also be used by the opponent. This creates a strategic tension that is absent in standard Mastermind. Each player aims to identify the opponent’s hidden code, but at the same time must consider what the opponent can infer from the same publicly available information. As a result, decisions are strategic where a move can be good for learning, while simultaneously revealing information about one’s own situation.</p>
+
+    <p>At any point in the game there is a (hidden) actual pair of secret codes, one chosen by each player, but players do not reason directly from that actual pair. Instead, each player reasons over a set of possible worlds: code-pairs that are still compatible with the public history (guesses and public feedback). As the game progresses, public feedback eliminates incompatible worlds, shrinking the space of possibilities. This is exactly the setting epistemic logic and dynamic epistemic logic (DEL) were designed to model.</p>
+
+    <p>Master(s)Mind(s) serves as a concrete case study of the course themes of knowledge and information change. What each player considers possible can be represented using Kripke models, and the effect of each publicly observed outcome can be modelled as a public-announcement update. This makes it possible to state precisely when a player knows the opponent’s code, and how uncertainty is reduced for each player over time.</p>
+
+    <p>This tension between learning and leaking is the main motivation of our work. Master(s)Mind(s) is useful here not because it faithfully reproduces real interaction, but because it isolates a clear information structure: public observations simultaneously restrict what one learns about the opponent and what the opponent learns about oneself. The game therefore provides a controlled setting in which these knowledge changes can be analysed precisely, without introducing additional real-world complications.</p>
+
+    <p>From a logical perspective, Master(s)Mind(s) is therefore a natural setting to apply the course tools on knowledge and information change. The game can be seen as an instance of information flow in the following sense: each publicly observed outcome rules out some possible hidden configurations and thereby restricts the space of worlds that both players consider possible. This connects directly to epistemic logic, which is used to express what a player knows, and to dynamic updates, which describe how knowledge changes after new public information. It also highlights higher-order knowledge: not only what $i$ knows and what $j$ knows, but what $i$ knows that $j$ knows, what $i$ knows that $j$ knows that $i$ knows, and so on. Because the outcomes are public, players can reason about each other’s reasoning at these higher orders, and this can affect which moves are strategically attractive.</p>
+
+    <p>In the rest of this report, the game rules are introduced, the logical framework is explained, the implemented strategies are presented, and experimental results are reported comparing the performance of the different strategies.</p>
   </section>
 </main>
 

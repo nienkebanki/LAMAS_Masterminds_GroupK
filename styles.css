@@ -104,6 +104,34 @@ footer{
   border: 1px solid rgba(255,255,255,0.10);
 }
 
+.fb-white,
+.fb-black{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  vertical-align: middle;
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+
+  font-weight: 800;
+  font-size: 14px;
+  line-height: 1;
+}
+
+.fb-white{
+  background: #ffffff;
+  color: #000000;
+  border: 2px solid #000000;
+}
+
+.fb-black{
+  background: #000000;
+  color: #ffffff;
+  border: 2px solid #ffffff;
+}
+
 /* The colors of the codes left and right */
 .peg-col.left  .peg:nth-child(1){ background: var(--mm-red); }
 .peg-col.left  .peg:nth-child(2){ background: var(--mm-blue); }
@@ -221,4 +249,14 @@ pre{
   color: rgba(243,247,255,0.90);
   font-size: 12px;
   font-weight: 900;
+}
+
+.board-img{
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 12px auto 0;
+  border-radius: 16px;
+  border: 1px solid rgba(140,170,255,0.22);
+  box-shadow: 0 10px 22px rgba(0,0,0,0.25);
 }

@@ -35,17 +35,162 @@
     <a href="game.html">Game</a>
     <a href="theory.html">Theory</a>
     <a href="strategies.html">Strategies</a>
-    <a href="experiments.html">Experiments</a>
     <a class="active" href="implementation.html">Implementation</a>
+    <a href="experiments.html">Experiments</a>
     <a href="references.html">References</a>
   </nav>
 </header>
 
 <main>
   <section>
-    <h2>What we implemented</h2>
+    <h2>Implementation</h2>
     <p>
+      This section describes how the formal DEL/PAL model from Section&nbsp;<span class="math">\( \ref{sec:theory} \)</span>
+      is realised computationally, and how the three strategies are implemented in terms of the information-theoretic
+      quantities from Section&nbsp;<span class="math">\( \ref{sec:info-theory} \)</span>.
+    </p>
 
+    <h3>State space and Kripke structure.</h3>
+    <p>
+      We fix <span class="math">\( \mathsf{Col}=\{\textsf{b},\textsf{r},\textsf{g},\textsf{y},\textsf{p}\} \)</span>
+      and code length <span class="math">\( 3 \)</span> with no repetitions, so there are
+      <span class="math">\( 5\cdot 4\cdot 3=60 \)</span> legal codes. A world corresponds to an ordered pair of codes
+      <span class="math">\( (\mathit{code}_i,\mathit{code}_j) \)</span>, hence the initial model contains
+      <span class="math">\( 60^2=3600 \)</span> worlds. We construct a two-agent Kripke structure with the standard
+      <span class="math">\( S5 \)</span> indistinguishability relations: agent <span class="math">\( i \)</span>
+      relates worlds that agree on the first component, and agent <span class="math">\( j \)</span> relates worlds that
+      agree on the second component. In the code, these relations are built by comparing the prefix/suffix of the
+      world-name encoding <span class="math">\( (\mathit{code}_i,\mathit{code}_j) \)</span>.
+    </p>
+
+    <h3>Feedback and public announcements.</h3>
+    <p>
+      Given a guess <span class="math">\( g \)</span> and a code <span class="math">\( c \)</span>, the Mastermind feedback
+      is computed as a pair <span class="math">\( \mathsf{fb}(g,c)=(\mathsf{black}(g,c),\mathsf{white}(g,c)) \)</span>.
+      A Master(s)Mind(s) move produces two publicly observable feedback values: one comparing
+      <span class="math">\( g \)</span> to the opponent's secret and one comparing <span class="math">\( g \)</span> to the
+      active player's own secret. In our implementation, each move therefore generates two announcement constraints, and a
+      full round consists of two such moves (first by <span class="math">\( i \)</span>, then by <span class="math">\( j \)</span>).
+    </p>
+
+    <p>
+      For each move, both agents update their internal candidate sets and simultaneously the shared Kripke structure is
+      updated by a public-announcement step. Concretely, after <span class="math">\( i \)</span>'s move with guess
+      <span class="math">\( g_1 \)</span>, we compute:
+    </p>
+
+    <p class="math">
+      \[
+      \mathsf{fb}_1^j := \mathsf{fb}(g_1,\mathit{code}_j),\qquad \mathsf{fb}_1^i := \mathsf{fb}(g_1,\mathit{code}_i),
+      \]
+    </p>
+
+    <p>
+      and similarly after <span class="math">\( j \)</span>'s move with guess <span class="math">\( g_2 \)</span> we compute
+      <span class="math">\( (\mathsf{fb}_2^i,\mathsf{fb}_2^j) \)</span>. Each of these feedback values induces a disjunctive
+      constraint over the remaining worlds, and the round announcement is the conjunction of the four constraints. The
+      resulting PAL update is performed by restricting the Kripke structure to the worlds satisfying this conjunction.
+    </p>
+
+    <h3>Epistemic candidate sets tracked by agents.</h3>
+    <p>
+      In addition to the global Kripke structure, each agent maintains two explicit candidate sets:
+    </p>
+
+    <ul>
+      <li>
+        <span class="math">\( S_i \)</span>: the codes still possible for the opponent's secret (the agent's epistemic uncertainty about the opponent);
+      </li>
+      <li>
+        <span class="math">\( T_i \)</span>: the codes the agent models as still possible for its own secret from the opponent's perspective (used to quantify self-leakage).
+      </li>
+    </ul>
+
+    <p>
+      After each move, both <span class="math">\( S_i \)</span> and <span class="math">\( T_i \)</span> are updated by filtering
+      against the observed public feedback values.
+    </p>
+
+    <h3>Information gain and information leakage (operational definitions).</h3>
+    <p>
+      We adopt a uniform prior over the candidate sets, so uncertainty is measured by Hartley entropy
+      <span class="math">\( H=\log_2|S| \)</span>. For a candidate guess <span class="math">\( g \)</span>, agent
+      <span class="math">\( i \)</span> computes expected information gain about the opponent by bucketing the current
+      opponent-candidates in <span class="math">\( S_i \)</span> according to the feedback they would yield against
+      <span class="math">\( g \)</span>, and taking:
+    </p>
+
+    <p class="math">
+      \[
+      \mathrm{IG}_i^{\mathit{opp}}(g)=H(S_i)-\mathbb{E}_{f}[H(S_i^{g,f})].
+      \]
+    </p>
+
+    <p>
+      In the implementation this is computed by grouping <span class="math">\( S_i \)</span> into feedback “buckets” and
+      taking the entropy drop in expectation.
+    </p>
+
+    <p>
+      Self-information leakage is operationalised using the public self-feedback produced by one's own guess. Given guess
+      <span class="math">\( g \)</span>, the self-feedback <span class="math">\( \mathsf{fb}(g,\mathit{code}_i) \)</span>
+      is public, so it restricts <span class="math">\( T_i \)</span> to those codes that would have produced the same
+      self-feedback. The immediate leakage of <span class="math">\( g \)</span> is therefore:
+    </p>
+
+    <p class="math">
+      \[
+      \mathrm{IL}_i(g) \;=\; \log_2|T_i|-\log_2|T_i'|,
+      \]
+    </p>
+
+    <p>
+      where <span class="math">\( T_i' \)</span> is the filtered set after applying the self-feedback constraint.
+    </p>
+
+    <h3>Strategy implementations.</h3>
+    <p>All strategies select guesses from the current opponent candidate set <span class="math">\( S_i \)</span>.</p>
+
+    <ol>
+      <li>
+        <strong>Guessing-focused.</strong>
+        Chooses <span class="math">\( g\in S_i \)</span> maximising <span class="math">\( \mathrm{IG}_i^{\mathit{opp}}(g) \)</span>
+        (ignoring leakage)
+      </li>
+      <li>
+        <strong>Hiding-focused.</strong>
+        Chooses <span class="math">\( g\in S_i \)</span> minimising <span class="math">\( \mathrm{IL}_i(g) \)</span>; ties are broken in favour of larger
+        <span class="math">\( \mathrm{IG}_i^{\mathit{opp}}(g) \)</span> to avoid stalling.
+      </li>
+      <li>
+        <strong>Balanced.</strong>
+        For a fixed parameter <span class="math">\( \lambda&gt;0 \)</span>, chooses <span class="math">\( g\in S_i \)</span> maximising
+        <span class="math">\( U_i(g)=\mathrm{IG}_i^{\mathit{opp}}(g)-\lambda\cdot \mathrm{IL}_i(g) \)</span>, matching Equation&nbsp;<span class="math">\( \eqref{eq:balanced-utility} \)</span>.
+        <p class="math">
+          \[
+          U_i(g)=\mathrm{IG}_i^{\mathit{opp}}(g)-\lambda\cdot \mathrm{IL}_i(g),
+          \]
+        </p>
+      </li>
+    </ol>
+
+    <h3>Termination and outcome classification.</h3>
+    <p>
+      A simulation proceeds in rounds; a round consists of one move by <span class="math">\( i \)</span> and one move by
+      <span class="math">\( j \)</span>. After each round, we test whether either agent has epistemically identified the
+      opponent, i.e. whether its opponent-candidate set is a singleton. If at least one agent has done so, the game
+      terminates and we record the number of rounds taken. Because updates are public and rounds contain two moves, it is
+      possible for both agents to reach singleton candidate sets within the same round; we treat this as symmetric epistemic
+      success (<code>tie</code>), rather than enforcing a procedural winner.
+    </p>
+
+    <h3>Tournament driver and reproducibility.</h3>
+    <p>
+      To generate experimental data we use a tournament script that repeatedly instantiates fresh players, runs a game with a
+      maximum of <span class="math">\( 10 \)</span> rounds, and records summary metrics (rounds to termination, epistemic outcome label, and the
+      final number of remaining Kripke worlds). To keep tournament logs clean, internal debug/secret-code printing is
+      suppressed during simulation by redirecting stdout/stderr. Each game produces one row in the exported CSV file
+      (<code>tournament_results_selfplay.csv</code>).
     </p>
 
   </section>

@@ -33,81 +33,546 @@
     <a href="game.html">Game</a>
     <a class="active" href="theory.html">Theory</a>
     <a href="strategies.html">Strategies</a>
-    <a href="experiments.html">Experiments</a>
     <a href="implementation.html">Implementation</a>
+    <a href="experiments.html">Experiments</a>
     <a href="references.html">References</a>
   </nav>
 </header>
 
 <main>
-  <section>
+  <section id="theory">
     <h2>Theory</h2>
 
+    <h3>Kripke Models</h3>
+    <p>[Cite epistemic logic]</p>
+
+    <p>
+      We use the standard semantics of epistemic logic via Kripke models. Let
+      <span class="math">\( \mathcal{A} \)</span> be the finite set of agents,
+      <span class="math">\( \mathcal{A}=\{i, j\} \)</span>. An epistemic Kripke model is a tuple
+    </p>
+
+    <p class="math">
+      \( \mathcal{M} = \langle \mathcal{S}, \{\sim_k\}_{k \in \mathcal{A}}, V \rangle, \)
+    </p>
+
+    <p>
+      where <span class="math">\( \mathcal{S} \)</span> is a set of possible states, each
+      <span class="math">\( \sim_k \subseteq \mathcal{S} \times \mathcal{S} \)</span> is an
+      indistinguishability relation for agent <span class="math">\( k \)</span>, and
+      <span class="math">\( V : \mathsf{P} \to 2^\mathcal{S} \)</span> is a valuation
+      assigning to each atomic proposition the set of states where it is true. Truth
+      of formulas is defined relative to a state <span class="math">\( s \in \mathcal{S} \)</span>,
+      i.e. <span class="math">\( \mathcal{M},s \models \varphi \)</span>. In particular,
+    </p>
+
+    <p class="math">
+      \( \mathcal{M},s \models K_i \varphi \hspace{0.3cm} \text{iff} \hspace{0.3cm} \forall s' \in \mathcal{S}\ (s \sim_i s' \Rightarrow \mathcal{M},s' \models \varphi), \)
+    </p>
+
+    <p>
+      so <span class="math">\( K_i\varphi \)</span> means that
+      <span class="math">\( \varphi \)</span> holds in all states agent
+      <span class="math">\( i \)</span> considers possible from
+      <span class="math">\( s \)</span>.
+    </p>
+
+    <p><strong>Master(s)Mind(s) as Kripke Model</strong></p>
+
+    <p>
+      We model Master(s)Mind(s) in a single two-agent Kripke model that represents the
+      players' uncertainty about the two secret codes and how this uncertainty changes
+      after public feedback announcements.
+    </p>
+
+    <p>Fix the set of agents and colours:</p>
+
+    <p class="math">
+      \( \mathcal{A}=\{i,j\}, \hspace{0.3cm} \mathsf{Col}=\{\textsf{red},\textsf{blue},\textsf{yellow},\textsf{green},\textsf{pink}\}. \)
+    </p>
+
+    <p>
+      Let codes have fixed length 3 and contain no repeated colours. Define the set of
+      legal codes as
+    </p>
+
+    <p class="math">
+      \( \mathsf{Code}=\{(c_1,c_2,c_3)\in \mathsf{Col}^3 \mid c_k\neq c_l \text{ for } k\neq l\}. \)
+    </p>
+
+    <p>A <em>state</em> is a complete hidden configuration of the game:</p>
+
+    <p class="math">
+      \( s=(\mathit{code}_i,\mathit{code}_j)\in \mathcal{S} := \mathsf{Code}\times\mathsf{Code}, \)
+    </p>
+
+    <p>
+      where <span class="math">\( \mathit{code}_i \)</span> is <span class="math">\( i \)</span>'s secret and
+      <span class="math">\( \mathit{code}_j \)</span> is <span class="math">\( j \)</span>'s secret. Thus, the full
+      state space contains all legal pairs of secret codes.
+    </p>
+
+    <p>
+      One state <span class="math">\( s^\ast \in \mathcal{S} \)</span> corresponds to the actually chosen code-pair,
+      but agents generally do not know which state is actual because they only know their own secret code.
+      All epistemic reasoning is evaluated with respect to the states still considered possible and the relations
+      <span class="math">\( \sim_i,\sim_j \)</span>.
+    </p>
+
+    <p>We choose atomic propositions that directly name the secrets:</p>
+
+    <p class="math">
+      \( \mathsf{P}=\{\mathit{secret}_i{=}c \mid c\in\mathsf{Code}\}\ \cup\ \{\mathit{secret}_j{=}d \mid d\in\mathsf{Code}\}. \)
+    </p>
+
+    <p>The valuation <span class="math">\( V:\mathsf{P}\to \mathcal P(\mathcal{S}) \)</span> is:</p>
+
+    <p class="math">
+      \( V(\mathit{secret}_i{=}c)=\{(\mathit{code}_i,\mathit{code}_j)\in\mathcal{S} \mid \mathit{code}_i=c\}, \hspace{0.3cm}
+        V(\mathit{secret}_j{=}d)=\{(\mathit{code}_i,\mathit{code}_j)\in\mathcal{S} \mid \mathit{code}_j=d\}. \)
+    </p>
+
+    <p>
+      <span class="math">\( V(p) \subseteq \mathcal{S} \)</span> is the set of states in which the atomic proposition
+      <span class="math">\( p \)</span> is true.
+    </p>
+
+    <p>
+      So for example, at state <span class="math">\( s = (rgb, rby) \)</span> (red green blue, red blue yellow) the
+      atoms <span class="math">\( \mathit{secret}_i{=}rgb \)</span> and <span class="math">\( \mathit{secret}_j{=}rby \)</span> are true,
+      and all other <span class="math">\( \mathit{secret}_i{=}\cdot \)</span> and <span class="math">\( \mathit{secret}_j{=}\cdot \)</span>
+      atoms are false.
+    </p>
+
+    <p>
+      Initially each player knows their own secret code but not the opponent's. This is encoded by relations
+      <span class="math">\( \sim_i \)</span> and <span class="math">\( \sim_j \)</span>:
+    </p>
+
+    <p class="math">
+      \( (\mathit{code}_i,\mathit{code}_j)\sim_i(\mathit{code}_i',\mathit{code}_j') \ \text{ iff }\ \mathit{code}_i=\mathit{code}_i', \hspace{0.3cm}
+        (\mathit{code}_i,\mathit{code}_j)\sim_j(\mathit{code}_i',\mathit{code}_j') \ \text{ iff }\  \mathit{code}_j=\mathit{code}_j'. \)
+    </p>
+
+    <p>
+      <span class="math">\( i \)</span> can initially only distinguish states by looking at the first component (their own code),
+      and <span class="math">\( j \)</span> can only distinguish states by looking at the second component (their own code).
+      These relations are equivalence relations (reflexive, symmetric, transitive), so the model is an <span class="math">\( S5 \)</span>-style knowledge model.
+    </p>
+
+    <p>The Master(s)Mind(s) Kripke model is therefore</p>
+
+    <p class="math">
+      \( M=\langle \mathcal{S},\sim,V\rangle \hspace{0.3cm}\text{with}\hspace{0.3cm} \sim=\{\sim_i,\sim_j\}. \)
+    </p>
+
     <h3>Epistemic Logic</h3>
+
     <p>
-      Epistemic logic is a modal logic in which “agent $i$ knows $\varphi$” is written $K_i\varphi$, and
-      “agent $i$ considers $\varphi$ possible” is written $M_i\varphi$. Knowledge is interpreted not as a
-      psychological state but as a constraint: agent $i$ knows $\varphi$ exactly when $\varphi$ holds in every
-      world that $i$ still considers possible. Semantically, a Kripke model consists of a set of possible worlds
-      together with, for each agent, an indistinguishability relation that connects worlds that look the same to
-      that agent. Evaluating $K_i\varphi$ amounts to checking $\varphi$ in all indistinguishable worlds.
+      Atomic propositions in <span class="math">\( \mathsf{P} \)</span> express facts about the hidden configuration of the game.
+      In our case, a state is a pair of secret codes, so the most important atoms are of the form
+      <span class="math">\( \mathit{secret}_i{=}c \)</span> and <span class="math">\( \mathit{secret}_j{=}d \)</span>
+      (for legal codes <span class="math">\( c,d\in\mathsf{Code} \)</span>), meaning:
+    </p>
+
+    <p class="math">
+      \( \mathit{secret}_i{=}c \text{ says that agent $i$'s secret code equals $c$,}\hspace{0.3cm}
+        \mathit{secret}_j{=}d \text{ says that agent $j$'s secret code equals $d$.} \)
     </p>
 
     <p>
-      To model Master(s)Minds, we treat a world as a full hidden configuration of the game, i.e. a pair
-      $(\mathit{code}_A,\mathit{code}_B)$. $A$’s indistinguishability relation connects worlds that agree on
-      $A$’s own code (since $A$ knows it) but may differ on $B$’s code; similarly for $B$. Thus each agent’s
-      information state is the set of opponent codes they still consider possible. An agent has solved the game
-      epistemically when all worlds they consider possible agree on the opponent’s code, that is, when their
-      candidate set is a singleton.
+      In a given state <span class="math">\( s=(\mathit{code}_i,\mathit{code}_j) \)</span> exactly one atom
+      <span class="math">\( \mathit{secret}_i{=}c \)</span> is true (namely with <span class="math">\( c=\mathit{code}_i \)</span>)
+      and exactly one atom <span class="math">\( \mathit{secret}_j{=}d \)</span> is true (namely with <span class="math">\( d=\mathit{code}_j \)</span>).
+    </p>
+
+    <p>Formulas <span class="math">\( \varphi \)</span> are built from atoms:</p>
+
+    <p class="math">
+      \( \varphi ::= p \mid \neg\varphi \mid (\varphi\wedge\psi) \mid K_k\varphi \mid [\varphi]\psi \hspace{0.3cm} (p\in\mathsf{P},\ k\in\mathcal{A}). \)
     </p>
 
     <p>
-      Besides each agent’s uncertainty about the opponent’s code, we also track what each agent believes the
-      opponent considers possible about their own code. For each agent $i$, we maintain a set $T_i$ of codes
-      that the opponent still considers possible for $i$’s secret code (as modelled by $i$). This is important
-      for analysing information leakage, since $T_i$ is updated whenever $i$ provides feedback.
+      The connectives mean: <span class="math">\( \neg\varphi \)</span> means “<span class="math">\( \varphi \)</span> is false” and
+      <span class="math">\( \varphi\wedge\psi \)</span> means “both <span class="math">\( \varphi \)</span> and <span class="math">\( \psi \)</span> hold”.
+      The epistemic operator <span class="math">\( K_k\varphi \)</span> is read as “agent <span class="math">\( k \)</span> knows <span class="math">\( \varphi \)</span>”.
+      In Master(s)Mind(s), <span class="math">\( K_k\varphi \)</span> captures what <span class="math">\( k \)</span> can conclude from the public announcements together with knowledge of their own secret code.
     </p>
 
-    <h3>Public announcements and updates</h3>
-    <p>
-      The game dynamics are captured using Dynamic Epistemic Logic. After each guess, a publicly observed outcome
-      provides information to both players, and each updates their model accordingly. Public Announcement Logic (PAL)
-      describes this process: after a truthful public announcement of $\varphi$, the epistemic model is restricted
-      to the worlds in which $\varphi$ holds.
+    <p>We also use the standard abbreviation for possibility:</p>
+
+    <p class="math">
+      \( M_k\varphi \;:=\; \neg K_k\neg\varphi, \)
     </p>
 
     <p>
-      In Master(s)Minds, each move produces two feedback values: the Mastermind-style feedback on the opponent’s code
-      and the feedback on the player’s own code for that same guess. Together these form a conjunctive public announcement
-      eliminating all worlds incompatible with either feedback. Since the announcement is public, both players update, and
-      each knows that the other updated as well. This shared updating is what makes the game strategic: a move changes not
-      only one’s own knowledge but also the opponent’s knowledge and what the opponent can infer.
+      read as “agent <span class="math">\( k \)</span> considers <span class="math">\( \varphi \)</span> possible”.
+      In the game, <span class="math">\( M_k(\mathit{secret}_{-k}{=}d) \)</span> expresses that the opponent code <span class="math">\( d \)</span> is still compatible with everything <span class="math">\( k \)</span> has observed so far (i.e. <span class="math">\( d \)</span> is still in <span class="math">\( k \)</span>'s possible set).
+    </p>
+
+    <p>The key knowledge clause is:</p>
+
+    <p class="math">
+      \( M,s\models K_k\varphi \hspace{0.3cm}\text{iff}\hspace{0.3cm}
+        \text{for all } t\in\mathcal{S} \text{ with } s\sim_k t,\ \ M,t\models\varphi. \)
     </p>
 
     <p>
-      Because all remaining worlds are treated as equally possible and eliminated deterministically, epistemic uncertainty can
-      naturally be measured by Hartley entropy, $H=\log_2|S|$, which counts the number of bits required to specify the remaining
-      possible worlds. This uniform-entropy view aligns with S5 knowledge models, where agents have no probabilistic beliefs:
-      only sets of indistinguishable worlds.
-    </p>
-
-    <h3>Higher-order reasoning and common knowledge</h3>
-    <p>
-      Because updates are public, Master(s)Minds supports higher-order reasoning. After an outcome, each agent knows not only how
-      their own information state changes, but also how the opponent’s information state changes, and that the opponent knows this
-      too. This corresponds to nested knowledge operators of the form $K_iK_j\varphi$, and possibly deeper iterations. The original
-      MastersMinds literature highlights this as a setting where players may require second-order Theory of Mind reasoning to
-      anticipate the opponent’s updates.
+      So <span class="math">\( K_k\varphi \)</span> holds exactly when <span class="math">\( \varphi \)</span> is true in every state that agent
+      <span class="math">\( k \)</span> cannot distinguish from <span class="math">\( s \)</span>. This is the precise sense in which knowledge is a constraint:
+      it depends only on which states are still possible given <span class="math">\( k \)</span>'s information.
     </p>
 
     <p>
-      Publicly observed outcomes also accumulate into a shared history, generating common knowledge: information that everyone knows,
-      everyone knows that everyone knows, and so on. This common ground is what allows players to coordinate their reasoning about how
-      information flows through the game and how future updates will affect each other’s knowledge.
+      For example, “<span class="math">\( i \)</span> knows that <span class="math">\( j \)</span>'s code is <span class="math">\( d \)</span>” is
+      <span class="math">\( K_i(\mathit{secret}_j{=}d) \)</span>. In our model this means:
     </p>
+
+    <p class="math">
+      \( M,(\mathit{code}_i,\mathit{code}_j)\models K_i(\mathit{secret}_j{=}d)
+        \hspace{0.3cm}\Longleftrightarrow\hspace{0.3cm}
+        \text{in all states with the same }\mathit{code}_i,\ \text{the second component equals } d. \)
+    </p>
+
+    <p>
+      Equivalently, <span class="math">\( i \)</span>'s remaining candidate set for <span class="math">\( j \)</span> is a singleton, which matches the epistemic win condition.
+    </p>
+
+    <h3>Feedback as a public announcement</h3>
+    <p>[Cite dynamic epistemic logic!!!]</p>
+
+    <p>
+      A move in Master(s)Mind(s) produces public information because everyone observes the guess and the feedback on both secret codes (of agents
+      <span class="math">\( i \)</span> and <span class="math">\( j \)</span>).
+    </p>
+
+    <p>
+      Let <span class="math">\( g=(g_1,g_2,g_3)\in\mathsf{Code} \)</span> be a guess and let
+      <span class="math">\( c=(c_1,c_2,c_3)\in\mathsf{Code} \)</span> be a code. Define the number of black pins, where a colour of the guess is on the same position as in the secret code, as
+    </p>
+
+    <p class="math">
+      \( \mathsf{black}(g,c)=\bigl|\{k\in\{1,2,3\}\mid g_k=c_k\}\bigr|. \)
+    </p>
+
+    <p>
+      Because we forbid repetitions, the number of white pins, when a colour is correct but on the wrong position, is:
+    </p>
+
+    <p class="math">
+      \( \mathsf{white}(g,c)=\bigl|\{g_1,g_2,g_3\}\cap\{c_1,c_2,c_3\}\bigr|-\mathsf{black}(g,c). \)
+    </p>
+
+    <p>We package this as the feedback pair:</p>
+
+    <p class="math">
+      \( \mathsf{fb}(g,c)=\bigl(\mathsf{black}(g,c),\ \mathsf{white}(g,c)\bigr). \)
+    </p>
+
+    <p>When a guess <span class="math">\( g \)</span> is made, the public outcome is the pair</p>
+
+    <p class="math">
+      \( o=(\mathsf{fb}_j,\mathsf{fb}_a) := \bigl(\mathsf{fb}(g,\mathit{code}_j),\ \mathsf{fb}(g,\mathit{code}_i)\bigr). \)
+    </p>
+
+    <p>
+      The first component is feedback against <span class="math">\( j \)</span>'s secret, the second against <span class="math">\( i \)</span>'s secret.
+      This is exactly the Master(s)Mind(s) twist: the same guess yields information about both players' secrets, and the whole pair is public.
+    </p>
+
+    <p>
+      Given observed outcome <span class="math">\( o=(\mathsf{fb}_j,\mathsf{fb}_i) \)</span> after guess <span class="math">\( g \)</span>, define the set of codes consistent with a feedback value:
+    </p>
+
+    <p class="math">
+      \( \mathcal{C}(\mathsf{fb}_j,g)=\{d\in\mathsf{Code} \mid \mathsf{fb}(g,d)=\mathsf{fb}_j\}, \hspace{0.1 cm} 
+        \mathcal{C}(\mathsf{fb}_i,g)=\{c\in\mathsf{Code} \mid \mathsf{fb}(g,c)=\mathsf{fb}_i\}. \)
+    </p>
+
+    <p>The public announcement is then the single formula</p>
+
+    <p class="math">
+      \( \mathsf{Ann}(g,o) := \Big(\ \bigvee_{d\in\mathcal{C}(\mathsf{fb}_j,g)} (\mathit{secret}_j{=}d)\ \Big)\ \wedge\ \Big(\ \bigvee_{c\in\mathcal{C}(\mathsf{fb}_i,g)} (\mathit{secret}_i{=}c)\ \Big). \)
+    </p>
+
+    <p>
+      This is the conjunction of two constraints where the public outcome imposes two constraints at once, one on <span class="math">\( j \)</span>'s code and one on <span class="math">\( i \)</span>'s code, and a state survives only if it satisfies both.
+    </p>
+
+    <h3>PAL update</h3>
+
+    <p>
+      Public Announcement Logic (PAL), a core fragment of dynamic epistemic logic, updates a model by removing all states where the announced formula is false.
+      For any formula <span class="math">\( \varphi \)</span>:
+    </p>
+
+    <p class="math">
+      \( M\mid \varphi = \langle \mathcal{S}',\sim',V'\rangle, \)
+    </p>
+
+    <p>where</p>
+
+    <p class="math">
+      \( \mathcal{S}'=\{s\in\mathcal{S}\mid M,s\models \varphi\}= \left[\!\left[ \varphi \right]\!\right]_M, \hspace{0.3cm}
+        \sim'_i=\sim_i\cap(\mathcal{S}'\times\mathcal{S}'), \hspace{0.3cm}
+        V'(p)=V(p)\cap\mathcal{S}'. \)
+    </p>
+
+    <p>
+      So “states disappear” means that states not satisfying <span class="math">\( \varphi \)</span> are removed from the state set, and the accessibility relations are restricted to the remaining states.
+    </p>
+
+    <p>The dynamic modality is interpreted as:</p>
+
+    <p class="math">
+      \( M,s\models [\varphi]\psi \hspace{0.3cm}\text{iff}\hspace{0.3cm} \text{if } M,s\models\varphi \text{ then } (M\mid\varphi),s\models\psi. \)
+    </p>
+
+    <p>
+      After observing outcome <span class="math">\( o \)</span> for guess <span class="math">\( g \)</span>, the new epistemic model is
+    </p>
+
+    <p class="math">
+      \( M' \;=\; M\mid \mathsf{Ann}(g,o). \)
+    </p>
+
+    <p>
+      This is a single shared updated model: the outcome is public, so both players reason inside the same restricted structure.
+    </p>
+
+    <h3>Higher-order knowledge and common knowledge</h3>
+
+    <p>
+      Because announcements are public, agents not only learn the constraint, but also know that the other agent learned it, and so on.
+      This is expressed by nested knowledge such as <span class="math">\( K_iK_j\varphi \)</span>.
+    </p>
+
+    <p>
+      If we include common knowledge, we use the standard reachability semantics. For a group <span class="math">\( G\subseteq\mathcal{A} \)</span>, let
+      <span class="math">\( \sim_G=\bigcup_{k\in G}\sim_k \)</span> and let <span class="math">\( \sim_G^{*} \)</span> be its reflexive-transitive closure. Then:
+    </p>
+
+    <p class="math">
+      \( M,s\models C_G\varphi \hspace{0.3cm}\text{iff}\hspace{0.3cm} \text{for all } t \text{ with } s\sim_G^{*} t,\ \ M,t\models\varphi. \)
+    </p>
+
+    <p>
+      In our setting, public outcomes provide shared constraints on <span class="math">\( \mathcal{S} \)</span>, so after updating with
+      <span class="math">\( \mathsf{Ann}(g,o) \)</span>, the fact that the remaining states satisfy that constraint is available to both players and supports higher-order reasoning about what the other can now infer.
+    </p>
+
+    <p>
+      For example, after a public update <span class="math">\( \mathsf{Ann}(g,o) \)</span>, it may hold that
+      <span class="math">\( M',s \models K_i K_j \neg(\mathit{secret}_j=d) \)</span>, expressing that <span class="math">\( i \)</span> knows that <span class="math">\( j \)</span> knows that a certain candidate code <span class="math">\( d \)</span> has been eliminated.
+    </p>
+
+    <h3>Toy Example</h3>
+
+    <p>
+      In the toy example from the Game section (codes of length 2 with <span class="math">\( \mathsf{Col}=\{r,g,b\} \)</span> without repetition), a state is a complete hidden configuration
+      <span class="math">\( s=(\mathit{code}_i,\mathit{code}_j)\in \mathsf{Code}\times\mathsf{Code} \)</span>, i.e. a choice of <span class="math">\( i \)</span>'s secret code and <span class="math">\( j \)</span>'s secret code.
+      In this toy setting, the set of legal codes is
+    </p>
+
+    <p class="math">
+      \( \mathsf{Code}=\{rg, rb, gr, gb, br, bg\} \hspace{0.3cm}\text{meaning}\hspace{0.3cm} |\mathsf{Code}|=6, \)
+    </p>
+
+    <p>and the full state space has size</p>
+
+    <p class="math">
+      \( \mathcal{S}=\mathsf{Code}\times\mathsf{Code} \hspace{0.3cm}\text{with}\hspace{0.3cm} |\mathcal{S}|=36. \)
+    </p>
+
+    
+
+    <p>Our epistemic model is a single two-agent Kripke model</p>
+
+    <p class="math">
+      \( M=\langle \mathcal{S},\sim_i,\sim_j,V\rangle \)
+    </p>
+
+    <p>whose state space <span class="math">\( \mathcal{S} \)</span> contains the code-pairs.</p>
+
+    <figure>
+      <img src="toy_example/1.png" alt="Caption" style="width: 50%;">
+      <figcaption></figcaption>
+    </figure>
+
+    <figure>
+      <img src="toy_example_kripke/1.png" alt="Before the game starts: all 36 code-pairs in S are possible." style="max-width:100%; height:auto;">
+      <figcaption>
+        Figure 1: Before the game starts: all <span class="math">\( 36 \)</span> code-pairs in <span class="math">\( \mathcal{S} \)</span> are possible.
+      </figcaption>
+    </figure>
+
+    <p>
+      Figure&nbsp;1 shows the model when the game has not started yet. Initially, no secret codes have been chosen yet, so every code-pair in
+      <span class="math">\( \mathsf{Code}\times\mathsf{Code} \)</span> is possible. Hence the model contains all <span class="math">\( 36 \)</span> states.
+    </p>
+
+    <figure>
+      <img src="toy_example/2.png" alt="Caption" style="width: 50%;">
+      <figcaption></figcaption>
+    </figure>
+
+    <figure>
+      <img src="toy_example_kripke/2.png" alt="After both players chose a secret: the actual state is fixed and relations partition the 36 states." style="max-width:100%; height:auto;">
+      <figcaption>
+        Figure 2: After both players chose a secret: the actual state is fixed, and <span class="math">\( \sim_i,\sim_j \)</span> partition the <span class="math">\( 36 \)</span> states into <span class="math">\( S5 \)</span> equivalence classes (each agent knows its own component).
+      </figcaption>
+    </figure>
+
+    <p>
+      Figure&nbsp;2 shows the model after both agents privately choose their secrets. In the pictured run, the actual state is
+    </p>
+
+    <p class="math">
+      \( s^\ast=(\mathit{code}_i,\mathit{code}_j)=(gr,rb). \)
+    </p>
+
+    <p>
+      So in the actual state agent <span class="math">\( i \)</span> knows its own secret, i.e.
+      <span class="math">\( M,s^\ast\models K_i(\mathit{secret}_i{=}gr) \)</span>, and agent <span class="math">\( j \)</span> knows its own secret,
+      i.e. <span class="math">\( M,s^\ast\models K_j(\mathit{secret}_j{=}rb) \)</span>.
+      At the same time, neither agent yet knows the opponent's secret: <span class="math">\( i \)</span> still considers multiple <span class="math">\( j \)</span>-codes possible and <span class="math">\( j \)</span> still considers multiple <span class="math">\( i \)</span>-codes possible. This is exactly what the relations express:
+    </p>
+
+    <p class="math">
+      \( (\mathit{code}_i,\mathit{code}_j)\sim_i(\mathit{code}_i',\mathit{code}_j') \iff \mathit{code}_i=\mathit{code}_i', \hspace{0.3cm}
+        (\mathit{code}_i,\mathit{code}_j)\sim_j(\mathit{code}_i',\mathit{code}_j') \iff \mathit{code}_j=\mathit{code}_j'. \)
+    </p>
+
+    <p>
+      So from <span class="math">\( i \)</span>'s perspective, all states with first component <span class="math">\( gr \)</span> are indistinguishable (different possibilities for <span class="math">\( \mathit{code}_j \)</span>),
+      and from <span class="math">\( j \)</span>'s perspective, all states with second component <span class="math">\( rb \)</span> are indistinguishable (different possibilities for <span class="math">\( \mathit{code}_i \)</span>).
+    </p>
+
+    <figure>
+      <img src="toy_example/3.png" alt="Caption" style="width: 50%;">
+      <figcaption></figcaption>
+    </figure>
+
+    <figure>
+      <img src="toy_example_kripke/3.png" alt="After the first guess: public feedback removes inconsistent states." style="max-width:100%; height:auto;">
+      <figcaption>
+        Figure 3: After the first guess: public feedback removes all states inconsistent with the observed outcome, yielding a smaller submodel.
+      </figcaption>
+    </figure>
+
+    <p>
+      Figure&nbsp;3 shows the model after the first guess and its public feedback. In the pictured run, the first guess is from agent <span class="math">\( i \)</span>
+    </p>
+
+    <p class="math">
+      \( g=bg. \)
+    </p>
+
+    <p>
+      The guess is checked against both secrets, and the feedback pair is publicly observed. The feedback shown in the figure is:
+    </p>
+
+    <p class="math">
+      \( \mathsf{fb}(g,\mathit{code}_j)=\mathsf{fb}(bg,rb)=(0,1) \hspace{0.3cm}\text{and}\hspace{0.3cm}
+        \mathsf{fb}(g,\mathit{code}_i)=\mathsf{fb}(bg,gr)=(0,1). \)
+    </p>
+
+    <p>So the public outcome is</p>
+
+    <p class="math">
+      \( o=\bigl((0,1),(0,1)\bigr). \)
+    </p>
+
+    <p>
+      This outcome acts as a public announcement that removes every state <span class="math">\( (\mathit{code}_i,\mathit{code}_j) \)</span> for which either
+      (i) <span class="math">\( \mathsf{fb}(g,\mathit{code}_j)\neq (0,1) \)</span> or (ii) <span class="math">\( \mathsf{fb}(g,\mathit{code}_i)\neq (0,1) \)</span>.
+      After the update, both secrets must be codes that would give <span class="math">\( (0,1) \)</span> against <span class="math">\( g=bg \)</span>.
+      In this toy setting,
+    </p>
+
+    <p class="math">
+      \( \{c\in\mathsf{Code} \mid \mathsf{fb}(bg,c)=(0,1)\}=\{rb,gr\}. \)
+    </p>
+
+    <p>Hence the updated state space is restricted to</p>
+
+    <p class="math">
+      \( (\mathit{code}_i,\mathit{code}_j)\in\{rb,gr\}\times\{rb,gr\}, \)
+    </p>
+
+    <p>
+      so the model shrinks from <span class="math">\( 36 \)</span> states to <span class="math">\( 4 \)</span> states, and
+      <span class="math">\( \sim_i,\sim_j \)</span> are restricted to these remaining states.
+    </p>
+
+    <p>
+      Now it is <span class="math">\( j \)</span>'s turn. Let <span class="math">\( M_1 \)</span> be the updated model after <span class="math">\( i \)</span>'s first move, i.e.
+      <span class="math">\( M_1 := M \mid \mathsf{Ann}(bg,((0,1),(0,1))) \)</span>, and let <span class="math">\( s^\ast=(gr,rb) \)</span> be the actual state in the pictured run.
+      Since <span class="math">\( j \)</span> knows its own secret is <span class="math">\( \mathit{code}_j=rb \)</span>, its <span class="math">\( \sim_j \)</span>-information set in <span class="math">\( M_1 \)</span> is exactly the two states
+    </p>
+
+    <p class="math">
+      \( [s^\ast]_{\sim_j}=\{(rb,rb),(gr,rb)\}. \)
+    </p>
+
+    <p>Hence <span class="math">\( j \)</span> knows that <span class="math">\( i \)</span>'s secret must be one of the two remaining candidates:</p>
+
+    <p class="math">
+      \( M_1,s^\ast \models K_j\bigl((\mathit{secret}_i{=}rb)\ \vee\ (\mathit{secret}_i{=}gr)\bigr), \)
+    </p>
+
+    <p>but <span class="math">\( j \)</span> does not yet know which one holds.</p>
+
+    <p>
+      Because the update is public, <span class="math">\( j \)</span> can also reason about <span class="math">\( i \)</span>'s knowledge state (higher-order knowledge).
+      In particular, in <span class="math">\( M_1 \)</span> agent <span class="math">\( i \)</span>'s remaining candidates for <span class="math">\( j \)</span> are <span class="math">\( \{rb,gr\} \)</span>, so <span class="math">\( j \)</span> knows that <span class="math">\( i \)</span> knows that
+      <span class="math">\( j \)</span>'s code contains either blue or green (in this toy setting, this is equivalent to “<span class="math">\( \mathit{secret}_j\in\{rb,gr\} \)</span>”):
+    </p>
+
+    <p class="math">
+      \( M_1,s^\ast \models K_jK_i\bigl((\mathit{secret}_j{=}rb)\ \vee\ (\mathit{secret}_j{=}gr)\bigr). \)
+    </p>
+
+    <p>
+      Agent <span class="math">\( j \)</span> now chooses a second guess. It can try <span class="math">\( rb \)</span> or <span class="math">\( gr \)</span> as candidate for <span class="math">\( \mathit{secret}_i \)</span>.
+      However, <span class="math">\( j \)</span> also knows that the feedback against its <em>own</em> secret is public and may leak information.
+      Since <span class="math">\( \mathit{code}_j=rb \)</span>, if <span class="math">\( j \)</span> were to guess <span class="math">\( rb \)</span>, then the second feedback component would be
+      <span class="math">\( \mathsf{fb}(rb,\mathit{code}_j)=\mathsf{fb}(rb,rb)=(2,0) \)</span>, which would make <span class="math">\( \mathit{secret}_j{=}rb \)</span> immediately known to <span class="math">\( i \)</span> after the update.
+      To avoid this, <span class="math">\( j \)</span> instead guesses
+    </p>
+
+    <p class="math">
+      \( g_2 = gr. \)
+    </p>
+
+    <figure>
+      <img src="toy_example/4.png" alt="Caption" style="width: 50%;">
+      <figcaption></figcaption>
+    </figure>
+    <figure>
+      <img src="toy_example_kripke/4.png" alt="The only state left is this single state, which is the true secret code combination of agents $i$ and $j$." style="max-width:100%; height:auto;">
+      <figcaption>
+        Figure 4: After two guesses: the only state left is this single state, which is the true secret code combination of agents <span class="math">\( i \text{ and } j\)</span>.
+      </figcaption>
+    </figure>
+
+    <p>In the actual state <span class="math">\( s^\ast=(gr,rb) \)</span>, the public outcome for this move is</p>
+
+    <p class="math">
+      \( o_2=\bigl(\mathsf{fb}(gr,\mathit{code}_i),\mathsf{fb}(gr,\mathit{code}_j)\bigr)=\bigl((2,0),(0,1)\bigr). \)
+    </p>
+
+    <p>
+      The first component <span class="math">\( (2,0) \)</span> uniquely identifies <span class="math">\( i \)</span>'s secret as <span class="math">\( gr \)</span>, so after the corresponding public update
+      <span class="math">\( M_2 := M_1 \mid \mathsf{Ann}(gr,o_2) \)</span> we have
+    </p>
+
+    <p class="math">
+      \( M_2,s^\ast \models K_j(\mathit{secret}_i{=}gr), \)
+    </p>
+
+    <p>which is exactly the epistemic win condition for <span class="math">\( j \)</span>.</p>
   </section>
-
 
 </main>
 

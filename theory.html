@@ -44,7 +44,6 @@
     <h2>Theory</h2>
 
     <h3>Kripke Models</h3>
-    <p>[Cite epistemic logic]</p>
 
     <p>
       We use the standard semantics of epistemic logic via Kripke models. Let
@@ -167,7 +166,7 @@
     </p>
 
     <h3>Epistemic Logic</h3>
-
+    <p>The definitions in this section are adopted from Meyer & van der Hoek's book, <em>Epistemic Logic for AI and Computer Science</em> (2004).</p>
     <p>
       Atomic propositions in <span class="math">\( \mathsf{P} \)</span> express facts about the hidden configuration of the game.
       In our case, a state is a pair of secret codes, so the most important atoms are of the form
@@ -239,7 +238,7 @@
     </p>
 
     <h3>Feedback as a public announcement</h3>
-    <p>[Cite dynamic epistemic logic!!!]</p>
+    <p>The definitions in this section are adopted from van Ditmarch et al.'s book, <em>Dynamic Epistemic Logic</em> (2008).</p>
 
     <p>
       A move in Master(s)Mind(s) produces public information because everyone observes the guess and the feedback on both secret codes (of agents
@@ -365,8 +364,9 @@
       For example, after a public update <span class="math">\( \mathsf{Ann}(g,o) \)</span>, it may hold that
       <span class="math">\( M',s \models K_i K_j \neg(\mathit{secret}_j=d) \)</span>, expressing that <span class="math">\( i \)</span> knows that <span class="math">\( j \)</span> knows that a certain candidate code <span class="math">\( d \)</span> has been eliminated.
     </p>
-
-    <h3>Toy Example</h3>
+  </section>  
+  <section id="theory_example">
+    <h2>Toy Example</h3>
 
     <p>
       In the toy example from the Game section (codes of length 2 with <span class="math">\( \mathsf{Col}=\{r,g,b\} \)</span> without repetition), a state is a complete hidden configuration

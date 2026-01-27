@@ -40,9 +40,9 @@
 </header>
 
 <main>
-  <section>
+  <section id="game">
     <h2>Game</h2>
-    <p>For this research, we use a simplified version of Master(s)Mind(s). The setting follows the competitive two-player idea introduced by Grachten and Druiven and discussed by \cite{Kooi2000} and \cite{verbrugge2008learning}, but the implementation is adapted to keep the state space small and to match the modelling choices used later in the report. Concretely, the code length is fixed to 3, the available colours are restricted to five (red, blue, yellow, green, pink), and guesses and codes are required to contain no repeated colours. These restrictions reduce the number of possible codes and make it feasible to compute updates and compare strategies systematically.</p>
+    <p>For this research, we use a simplified version of Master(s)Mind(s). Master(s)Mind(s) is a two-player game in which players $i$ and $j$ each secretly choose a code. The setting follows the game introduced by Grachten and Druiven and discussed by Kooi (2000) and Verbrugge & Mol (2008), but our simplified variant is adapted to keep the state space small and to match the modelling choices used later in the report. Concretely, the code length is fixed to 3, the available colours are restricted to five (red, blue, yellow, green, pink), and guesses and codes are required to contain no repeated colours. These restrictions reduce the number of possible codes and make it feasible to compute updates and compare strategies systematically.</p>
 
     <div class="legend" aria-label="Color legend">
       <span class="peg red"></span> red
@@ -54,7 +54,7 @@
       <span class="fb-dot fb-black">B</span> black
     </div>
 
-    <p>Master(s)Mind(s) is a two-player game in which players $i$ and $j$ each secretly choose a code. In our implementation, a code is a sequence of length 3 drawn from the five colours above, without repetition. Thus each player has $5 \cdot 4 \cdot 3 = 60$ possible secret codes. At the start of the game, each player knows their own secret code. Before any moves are played, all 60 opponent codes are considered possible.</p>
+    <p>For this research we chose a simplification where a code is a sequence of length 3 (in the original game it is code length 4) drawn from the five colours above, without repetition (in the original game repetition is allowed). Thus each player has $5 \cdot 4 \cdot 3 = 60$ possible secret codes. At the start of the game, each player knows their own secret code. Before any moves are played, all 60 opponent codes are considered possible.</p>
 
     <h3>Feedback</h3>
     <p>Each round, the active player (starting with $i$) makes a legal guess $g$ of length 3. Feedback is computed using the usual Mastermind comparison rule between a guess and a secret code. First, the number of black pins is the number of positions where the guess matches the secret code exactly (same colour in the same position). Second, the number of white pins is the number of colours that occur in both the guess and the secret code, but are not already counted as black pins. Since repetitions are not allowed, the white-pin count is simply the size of the colour-intersection minus the black-pin count.</p>
@@ -69,30 +69,30 @@
     <h3>Game rules</h3>
     <p>The game proceeds as follows:</p>
     <ol>
-      <li>At the start of the game, players $i$ and $j$ each select a secret code uniformly at random from the 60 legal codes.</li>
+      <li>At the start of the game, players $i$ and $j$ each select a random secret code from the 60 legal codes.</li>
       <li>On a turn, the active player chooses a legal guess $g$ (length 3, no repeated colours).</li>
-      <li>The system computes the two feedback values (against the opponent's code and against the active player's own code) according to the Mastermind rule above, and publicly reveals the black pins, white pins or no pins.</li>
+      <li>Two feedback values are computed by the agents themselves (against the opponent's code and against the active player's own code) according to the Mastermind rule above, and publicly reveals the black pins, white pins or no pins.</li>
       <li>The turn then switches to the other player.</li>
       <li>A classical win occurs immediately after a guess if the active player's guess exactly matches the opponent's code (i.e. the feedback against the opponent is $3$ black pins). In this report, however, our evaluation focuses on epistemic success (knowledge-based identification) rather than classical win events, since strategies are defined in terms of information gain and leakage.</li>
       <li>In addition, an epistemic win for player $i$ occurs when, based on the public history, $i$ can uniquely determine $j$'s code (i.e. only one opponent code remains consistent with everything observed so far).</li>
     </ol>
-
+    
     <p>We evaluate epistemic win conditions after each full round (i.e. after both players have made one guess and the corresponding public announcements have been applied). Thus, an epistemic win for player $i$ occurs at the end of a round when, from the accumulated public history, $i$ can uniquely determine $j$'s code, i.e. when its remaining candidate set for the opponent is a singleton. Because public announcements are shared, it is possible for both players to reach such a singleton state within the same round; we record this as a tie in the sense of symmetric epistemic success.</p>
   </section>
 
-  <section>
+  <section id="game_example">
     <h2>Toy example</h3>
-    <p>This example uses a smaller toy setting (length $2$ over $\{r,g,b\}$ without repetition) purely to illustrate turn order and feedback.</p>
+    <p>This example uses a smaller toy setting (length $2$ over $\{r,g,b\}$ without repetition) purely to illustrate turn order and feedback. It is important to note that the colors are read through the perspective of agent $j$. This is because it is otherwise confusing in explain the order of the code when having a double feedback.</p>
 
-    <p>In this example, $i$ is on the left and $j$ on the right, each with a hidden two-colour code. The numbers on top show the turn order: $i$ guesses on odd turns, $j$ on even turns. After each guess, both players get feedback (one vs $i$’s code and one vs $j$’s), where white means “right colour, wrong position” and black means “right colour, right position.”</p>
-
+    <p>In Figure 1, agent $i$ is on the left and agent $j$ on the right, each with a hidden two-colour code which is present to the themselves but not to the other agent. The numbers on top show the turn order: $i$ guesses on odd turns, $j$ on even turns. After each guess, both players get feedback (one vs $i$’s code and one vs $j$’s), where white means “right colour, wrong position” and black means “right colour, right position.”</p>
+    
     <p>On turn 1, $i$ guesses (green, blue). Against $i$’s code this gives one white pin, and against $j$’s code it also gives one white pin: in both cases, exactly one of the guessed colours is present but misplaced.</p>
-
+    
     <p>On turn 2, $j$ infers from the single white pin vs $i$ that exactly one of {green, blue} occurs in $i$’s code, and it is in the other position. In the situation shown, that leaves two candidates for $i$: (red, green) or (blue, red). Since (blue, red) is $j$’s own code, $j$ chooses the other option and guesses (red, green), which yields two black pins. Because it is $j$’s turn, $j$ wins.</p>
 
     <figure>
       <img src="toy_example/5.png" alt="Caption" style="width: 75%;">
-      <figcaption>A toy example of a Master(s)Mind(s) game, with code length of 2, with 3 possible colours (red, green, blue) where agent $i$ starts witht the first guess.</figcaption>
+      <figcaption>Figure 1: A toy example of a Master(s)Mind(s) game, with code length of 2, with 3 possible colours (red, green, blue) where agent $i$ starts witht the first guess.</figcaption>
     </figure>
   </section>
 

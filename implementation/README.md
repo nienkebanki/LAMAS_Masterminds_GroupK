@@ -13,14 +13,15 @@ The accompanying report provides the full formal background, logical modelling, 
 implementation/
 ├── __pycache__/
 ├── .venv/
+├── mlsolver.egg-info/
 ├── mlsolver/
-│   ├── build/
 │   ├── doc/
 │   ├── mlsolver/
+│   │   ├── __init__.py
 │   │   ├── kripke.py
 │   │   ├── formula.py
-│   │   └── ...
-│   ├── mlsolver.egg-info/
+│   │   ├── model.py
+│   │   └── tableau.py
 │   ├── test/
 │   ├── .gitignore
 │   ├── .travis.yml
@@ -30,7 +31,6 @@ implementation/
 ├── player.py
 ├── world.py
 ├── tournament.py
-├── analyze_results.py
 ├── requirements.txt
 ├── tournament_results_selfplay.csv
 ├── plot.png
